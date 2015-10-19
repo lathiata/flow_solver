@@ -44,7 +44,7 @@ def aStarSearch(problem, Print=False):
                 new_state = problem.get_result(state, action)
                 frontier.push(new_state, problem.heuristic(new_state))
 
-def flow_game_search(problem):
+def flow_game_search(problem, Print=False):
     '''
     an astar variation which does not expand unsolvable nodes
     '''
@@ -56,7 +56,8 @@ def flow_game_search(problem):
         state = frontier.pop()
         if state.get_board() not in explored:
             i += 1
-            print(i)
+            if Print:
+                print(i)
             if problem.goal_test(state):
                 print("done " + str(i))
                 return state
