@@ -44,6 +44,19 @@ class FlowGameProblem:
 				next_fgs.move(i, action[i])
 		return next_fgs
 
+	def get_alt_actions(self, flow_game_state):
+		curr_positions = flow_game_state.get_curr_positions()
+		goal_positions = flow_game_state.get_goal_positions
+		for i in range(len(curr_positions)):
+			if not flow_game_state.is_goal(curr_positions[i], i):
+				return i, flow_game_state.legal_moves(curr_positions[i])
+
+	def get_alt_result(self, flow_game_state, action, i):
+		next_fgs = deepcopy(flow_game_state)
+		next_fgs.move(i, action)
+		return next_fgs
+
+
 	def heuristic(self, flow_game_state):
 		curr_positions = flow_game_state.get_curr_positions()
 		goal_positions = flow_game_state.get_goal_positions()

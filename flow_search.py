@@ -68,6 +68,30 @@ def flow_game_search(problem, Print=False):
                     new_state = problem.get_result(state, action)
                     frontier.push(new_state, problem.heuristic(new_state))
 
+def flow_game_search_v1(problem, Print=False):
+    '''
+    an astar variation which does not expand unsolvable nodes
+    '''
+    i = 0
+    explored = []
+    frontier = util.PriorityQueue()
+    frontier.push(problem.get_start_state(), problem.heuristic(problem.get_start_state()))
+    while not frontier.isEmpty():
+        state = frontier.pop()
+        if state.get_board() not in explored:
+            i += 1
+            if Print:
+                print(state)
+            if problem.goal_test(state):
+                print("done " + str(i))
+                return state
+            explored.append(state.get_board)
+            if is_solvable(state):
+                color, possible_actions = problem.get_alt_actions(state)
+                for action in possible_actions:
+                    new_state = problem.get_alt_result(state, action, color)
+                    frontier.push(new_state, problem.heuristic(new_state))
+
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
