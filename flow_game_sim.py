@@ -1,7 +1,6 @@
 from flow_game_state import FlowGameState
 from flow_game_problem import FlowGameProblem
-from flow_search import aStarSearch, breadthFirstSearch, flow_game_search, flow_game_search_v1
-
+from flow_search import *
 def test1():
 	fg = FlowGameProblem(5, [[(0,2),(3,0)], [(0,3),(4,3)], [(1,3),(2,1)], [(3,3),(4,4)], [(3,1),(4,0)]])
 	print(fg.get_start_state())
@@ -27,7 +26,7 @@ def test3():
 	fg = FlowGameProblem(8, [[(1,6),(2,1)], [(2,2),(7,3)], [(3,1),(6,6)], [(4,2),(7,7)], [(5,4),(6,5)], [(6,1),(7,6)]])
 	print(fg.get_start_state())
 	print('flow game search')
-	result = flow_game_search(fg)
+	result = flow_game_search_v1(fg)
 	print(result)
 
 def test4():
@@ -39,4 +38,5 @@ def test4():
 
 
 test1()
-test2()
+#test2()
+#test3()

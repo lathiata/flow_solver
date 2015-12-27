@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="jquery-1.11.3.js"></script>
+		<meta charset="UTF-8">
+		<title>Flow Game Solver</title>
+	</head>
+
+	<body>
+		<div id="FlowInstance" style="display:none;">
+			Please select the boxes in the following order: color one start, color one end, color two start, color two end...Once complete, press submit to solve the instance.
+		</div>
+		<div id="FlowParameters">
+			Please select the number of colors your Flow instance has:
+			<select id="numColors">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+			</select>
+			<br>
+			Please select the size of the Flow instance grid:
+			<select id="gridSize">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+			</select>
+			<br>
+			<button id="generateButton" onclick="generateGrid()">Generate Grid</button>
+		</div>
+	</body>
+</html>
+
+<script>
+	
+	colors = ["resources/blue.jpg", "resources/gray.jpg", "resources/green.jpg", "resources/maroon.jpg", "resources/orange.jpg", "resources/pink.jpg", "resources/red.jpg", "resources/teal.jpg", "resources/yellow.jpg"];	
+
+	function generateGrid() {
+		//get values
+		var gridsize = $("#gridSize").val();
+		numcolors = $("#numColors").val();
+
+		//hide initial stuff
+		$("#FlowParameters").hide()
+
+		//generate the actual grid
+		var table = "<table>";
+		for (var i=0; i < gridsize; i++) {
+			table += "<tr>";
+			for (j=0; j < gridsize; j++) {
+				table += "<td><button id='" + i + j + "' onclick='createInstance(" + i + "," + j + ")'><img src='resources/black.jpg' style='width:50px;height:50px'></button></td>";
+			}
+			table += "</tr>"
+		}
+		table += "</table>"
+		$("#FlowInstance").append(table);
+		$("#FlowInstance").show();
+		index = 0;
+		instance = [];
+		//console.log(instance);
+	}
+
+	function createInstance(i, j) {
+		//look up jquery way
+		if ((index < 2*numcolors) && ($.inArray("(" + i + "," + j + ")", instance) == -1)) {
+			color = colors[Math.floor(index/2)];
+			var button = document.getElementById(i + "" + j);
+			button.innerHTML = "<img src='" + color + "' style='width:50px;height:50px'>";
+			instance.push("(" + i + "," + j + ")");
+			index += 1;
+			console.log(instance);
+		}
+	}
+</script>

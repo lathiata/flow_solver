@@ -5,9 +5,11 @@ class FlowGameState:
 		self.colors = ['grey', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan']
 		self.on_colors = ['on_grey', 'on_red', 'on_green', 'on_yellow', 'on_blue', 'on_magenta', 'on_cyan']
 		#initialize board
+		self.domains = {} #maps position to domains
 		self.gridsize = gridsize
 		self.unoccupied_space = self.gridsize ** 2
 		self.board = []
+		self.start_positions = []
 		self.curr_positions = []
 		self.goal_positions = []
 		self.val_colors = {}
@@ -19,14 +21,49 @@ class FlowGameState:
 			j += 1
 		#add start/goal positions
 		for i in range(len(start_positions)):
-
+			#SWAPPED I AND J
 			self.board[start_positions[i][0][1]][start_positions[i][0][0]] = chr(i + ord('a'))
 			self.curr_positions.append((start_positions[i][0][1], start_positions[i][0][0]))
 
+			self.start_positions.append((start_positions[i][0][1], start_positions[i][0][0]))
+
 			# self.board[start_positions[i][1][1]][start_positions[i][1][0]] = chr(i + ord('a'))
+
 			self.goal_positions.append((start_positions[i][1][1], start_positions[i][1][0]))
 
 			self.unoccupied_space -= 1
+
+		#add domains
+		for i in range(gridsize):
+			for j in range(gridsize):
+				if (i, j) not in self.start_positions:
+					self.domains[(i, j)] = range(gridsize)
+
+
+	def adjacent_positions(self, pos):
+		#returns a list of valid adjacent positions
+		adj_pos = []
+		i, j = pos
+
+		if i > 0:
+			adj_pos.append((i-1, j))
+
+		if i < self.gridsize-1:
+			adj_pos.append((i+1, j))
+
+		if j > 0:
+			adj_pos.append((i, j-1))
+
+		if j < self.gridsize-1:
+			adj_pos.append((i, j+1))
+
+		return adj_pos
+
+	def get_gridsize(self):
+		return self.gridsize
+
+	def get_start_positions(self):
+		return self.start_positions
 
 	def is_adjacent(self, pos1, pos2):
 		return abs(pos1[0]-pos2[0]) + abs(pos1[1] - pos2[1]) == 1
@@ -51,11 +88,11 @@ class FlowGameState:
 		self.curr_positions[i] = position
 		self.unoccupied_space -= 1
 
+	def border(self, pos):
+		return pos[0] == 0 or pos[0] == self.gridsize-1 or pos[1] == 0 or pos[1] == self.gridsize-1
 
+	#maybe move to flow game problem?
 	def legal_moves(self, current_position):
-		#CHANGE SO THAT YOU CAN'T MOVE ONTO A GOAL SPACE THAT IS NOT YOURS
-		#idea
-		#possible_moves = [(i-1,j), (i+1, j), (i,j-1), (i,j+1)]
 		moves = []
 		i = current_position[0]
 		j = current_position[1]

@@ -1,10 +1,11 @@
 from flow_game_state import FlowGameState
 from copy import copy, deepcopy
+import random
 
 class FlowGameProblem:
 	def __init__(self, gridsize, start_positions):
 		self.start_state = FlowGameState(gridsize, start_positions)
-
+	
 	def get_start_state(self):
 		return self.start_state 
 
@@ -56,7 +57,7 @@ class FlowGameProblem:
 		next_fgs.move(i, action)
 		return next_fgs
 
-
+	#need to update this ish
 	def heuristic(self, flow_game_state):
 		curr_positions = flow_game_state.get_curr_positions()
 		goal_positions = flow_game_state.get_goal_positions()
@@ -64,6 +65,11 @@ class FlowGameProblem:
 		for i in range(len(curr_positions)):
 			dist = abs(curr_positions[i][0] - goal_positions[i][0]) + abs(curr_positions[i][1] - goal_positions[i][1])
 			max_distance = max(max_distance, dist)
+
+		#try giving preference to the edges
+		if flow_game_state.border(curr_positions[i]):
+			max_distance /= 2
+		
 		return max_distance
 
 
