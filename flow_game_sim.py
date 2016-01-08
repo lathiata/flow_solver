@@ -1,6 +1,7 @@
 from flow_game_state import FlowGameState
 from flow_game_problem import FlowGameProblem
 from flow_search import *
+
 def test1():
 	fg = FlowGameProblem(5, [[(0,2),(3,0)], [(0,3),(4,3)], [(1,3),(2,1)], [(3,3),(4,4)], [(3,1),(4,0)]])
 	print(fg.get_start_state())

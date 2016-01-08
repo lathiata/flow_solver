@@ -47,6 +47,9 @@
 	colors = ["resources/blue.jpg", "resources/gray.jpg", "resources/green.jpg", "resources/maroon.jpg", "resources/orange.jpg", "resources/pink.jpg", "resources/red.jpg", "resources/teal.jpg", "resources/yellow.jpg"];	
 
 	function generateGrid() {
+		//create 'object'
+		instanceData = {instance: [], index: 0};
+		console.log(instanceData);
 		//get values
 		var gridsize = $("#gridSize").val();
 		numcolors = $("#numColors").val();
@@ -66,20 +69,21 @@
 		table += "</table>"
 		$("#FlowInstance").append(table);
 		$("#FlowInstance").show();
-		index = 0;
-		instance = [];
-		//console.log(instance);
 	}
 
 	function createInstance(i, j) {
 		//look up jquery way
-		if ((index < 2*numcolors) && ($.inArray("(" + i + "," + j + ")", instance) == -1)) {
-			color = colors[Math.floor(index/2)];
+		if ((instanceData.index < 2*numcolors) && ($.inArray("(" + i + "," + j + ")", instanceData.instance) == -1)) {
+			color = colors[Math.floor(instanceData.index/2)];
 			var button = document.getElementById(i + "" + j);
 			button.innerHTML = "<img src='" + color + "' style='width:50px;height:50px'>";
-			instance.push("(" + i + "," + j + ")");
-			index += 1;
-			console.log(instance);
+			instanceData.instance.push("(" + i + "," + j + ")");
+			instanceData.index += 1;
+			console.log(instanceData);
 		}
+	}
+
+	function send() {
+		
 	}
 </script>
