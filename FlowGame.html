@@ -7,9 +7,8 @@
 	</head>
 
 	<body>
-		<div id="FlowInstance" style="display:none;">
-			Please select the boxes in the following order: color one start, color one end, color two start, color two end...Once complete, press submit to solve the instance.
-		</div>
+		<div id="FlowInstructions"></div>
+		<div id="FlowInstance" style="display:none;"></div>
 		<div id="FlowParameters">
 			Please select the number of colors your Flow instance has:
 			<select id="numColors">
@@ -64,9 +63,11 @@
 			for (j=0; j < gridsize; j++) {
 				table += "<td><button id='" + i + j + "' onclick='createInstance(" + i + "," + j + ")'><img src='resources/black.jpg' style='width:50px;height:50px'></button></td>";
 			}
-			table += "</tr>"
+			table += "</tr>";
 		}
-		table += "</table>"
+		table += "</table>";
+		table += "<br><br><button onclick='send()'>Submit</button>";
+		$("#FlowInstructions").append("Currently placing <br> <img src='" + colors[0] + "' style='width:50px;height:50px'><br><br>");
 		$("#FlowInstance").append(table);
 		$("#FlowInstance").show();
 	}
@@ -75,6 +76,12 @@
 		//look up jquery way
 		if ((instanceData.index < 2*numcolors) && ($.inArray("(" + i + "," + j + ")", instanceData.instance) == -1)) {
 			color = colors[Math.floor(instanceData.index/2)];
+			if (Math.floor((instanceData.index+1)/2) < numcolors) {
+				nextColor = colors[Math.floor((instanceData.index+1)/2)];
+				$("#FlowInstructions").html("Currently placing <br> <img src='" + nextColor + "' style='width:50px;height:50px'><br><br>");
+			} else {
+				$("#FlowInstructions").html("Done placing - please submit");
+			}
 			var button = document.getElementById(i + "" + j);
 			button.innerHTML = "<img src='" + color + "' style='width:50px;height:50px'>";
 			instanceData.instance.push("(" + i + "," + j + ")");
@@ -84,6 +91,11 @@
 	}
 
 	function send() {
-		
+		var xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "http://127.0.0.1:5000//", true);
+		xhttp.send();
+
+		console.log(xhttp.status);
+		console.log(xhttp.statusText);
 	}
 </script>

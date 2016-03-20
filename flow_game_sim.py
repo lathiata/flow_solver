@@ -27,8 +27,11 @@ def test3():
 	fg = FlowGameProblem(8, [[(1,6),(2,1)], [(2,2),(7,3)], [(3,1),(6,6)], [(4,2),(7,7)], [(5,4),(6,5)], [(6,1),(7,6)]])
 	print(fg.get_start_state())
 	print('flow game search')
-	result = flow_game_search_v1(fg)
+	result = flow_game_search(fg)
 	print(result)
+	print('flow game search v1')
+	result1 = flow_game_search_v1(fg)
+	print(result1)
 
 def test4():
 	fg = FlowGameProblem(8, [[(0,0),(5,2)], [(1,1),(3,0)], [(1,2),(2,6)], [(1,6),(5,4)], [(4,0),(5,3)]])
@@ -36,8 +39,12 @@ def test4():
 	print('flow game search')
 	result = flow_game_search(fg)
 	print(result)
+	print('flow game search v1')
+	result1 = flow_game_search_v1(fg)
+	print(result1)
 
 
-test1()
-#test2()
-#test3()
+# test1()
+# test2()
+# test3()
+test4()
