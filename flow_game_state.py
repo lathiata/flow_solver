@@ -1,10 +1,10 @@
 import sys
 from termcolor import colored, cprint
-#standardize naming conventions...
+# TODO standardize naming conventions...
 class FlowGameState:
 	def __init__(self, gridsize, start_positions):
-		self.colors = ['red', 'green', 'yellow', 'blue', 'magenta', 'cyan']
-		self.on_colors = ['on_grey', 'on_red', 'on_green', 'on_yellow', 'on_blue', 'on_magenta', 'on_cyan']
+		self.colors = ['red', 'green', 'blue', 'magenta', 'cyan', 'white', 'yellow']
+		self.on_colors = ['on_red', 'on_green', 'on_blue', 'on_magenta', 'on_cyan']
 
 		#initialize board, empty spaces are -1
 		self.gridsize = gridsize

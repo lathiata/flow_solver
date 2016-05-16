@@ -1,6 +1,7 @@
 from flow_game_state import FlowGameState
 from copy import copy, deepcopy
 import random
+from flow_game_constants import TransitionModels
 
 class FlowGameProblem:
 	def __init__(self, gridsize, start_positions):
@@ -8,12 +9,6 @@ class FlowGameProblem:
 
 	def get_start_state(self):
 		return self.start_state 
-
-	# change how this is designed: have the ending positions initialized from the start
-	# in the get_actions functions, instead of checking if the curr position is at the goal position,
-	# simply check if the goal position would be a legal next move (use reached_goal(color/index) from
-	# the flow_game_state)
-	# ^ DONE ^
 
 	def goal_test(self, flow_game_state):
 		for i in range(len(flow_game_state.get_curr_positions())):
@@ -64,7 +59,27 @@ class FlowGameProblem:
 		next_fgs.move(i, action)
 		return next_fgs
 
-	#need to update this ish
+	def explore_v0(self, state, frontier):
+		possible_actions = self.get_actions_v0(state)
+		for action in possible_actions:
+			new_state = self.get_result_v0(state, action)
+			frontier.push(new_state, self.heuristic(new_state))
+
+
+	def explore_v1(self, state, frontier):
+		color, possible_actions = self.get_actions_v1(state)
+		for action in possible_actions:
+			new_state = self.get_result_v1(state, action, color)
+			frontier.push(new_state, self.heuristic(new_state))
+
+	#TODO: create a mapping TransitionModel.Version -> explore function
+	def explore(self, version, state, frontier):
+		if version == TransitionModels.VERSION_0:
+			self.explore_v0(state, frontier)
+		elif version == TransitionModels.VERSION_1:
+			self.explore_v1(state, frontier)
+
+	#TODO: implement better heuristic
 	def heuristic(self, flow_game_state):
 		curr_positions = flow_game_state.get_curr_positions()
 		goal_positions = flow_game_state.get_goal_positions()
@@ -82,17 +97,9 @@ class FlowGameProblem:
 
 
 
-
-
-
-
 # flow game as a constraint satisfaction problem
-
-# all positions must be colored
-# for all non start/end positions on the board, there must be an adjacent position of the same color 
-# for start positions there must be an uninterrupted connection to the goal position
-# each position in the grid will have a domain 
-
+#Xi,j != -1 forall i,j 
+#Xi,j == Xp,q for at least 1 adjacent 
 
 
 # beam search?
