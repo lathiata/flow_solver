@@ -2,8 +2,6 @@ import util
 from copy import deepcopy
 import random
 
-#TODO how to allow search functions to choose explore function based on Transition Model
-
 def is_solvable(flow_game_state):
     '''
     determines if it possible to solve the game from every color's perspective
@@ -83,14 +81,58 @@ def breadthFirstSearch(problem, version):
                 return state
             explored.append(state.get_board())
             problem.explore(version, state, frontier)
-            # possible_actions = problem.get_actions_v0(state)
-            # for action in possible_actions:
-            #     new_state = problem.get_result_v0(state, action)
-            #     frontier.append(new_state)
 
 def cspSearch(problem):
     """
     Poses the flow game as a CSP
+
+    Maintain Arc Consistency
+    Forward check
+    Backwards check
+
+    Xi,j != -1 forall i,j 
+    Xi,j == Xp,q for at least 1 adjacent 
     """
-    print problem.get_start_state()
+    def is_satisfied(state, gridsize):
+        pass
+
+    def inference(state, domains):
+        pass
+
+    def is_consistent(state, pos, val):
+        pass
+        
+    def inference_check(domain):
+        for val in domain.values():
+            if len(val) <= 0:
+                return False
+
+    #recursively perform backtrack search (DFS w/ improvement)
+    #foward checking
+    #maintain arc consistency
+    def backtrack_search(state, domains, gridsize):
+        if is_satisfied(state, gridsize):
+            return state
+        else:
+            next_pos = min(domains, len(key=domains.get)) #select the variable with the fewest things in domain
+            for val in domains[next_pos]:
+                if is_consistent(state, next_pos, val)
+            return None #if we hit here, there is a failure (should not happen)
+
+    state = problem.get_start_state()
+    start_positions = state.get_start_positions()
+    goal_positions = state.get_goal_positions()
+    gridsize = state.get_gridsize()
+
+    #create mapping (i,j) -> (possible values)
+    root_domains = {(i,j) : range(len(state.get_start_positions())) \
+               for i in range(gridsize) \
+               for j in range(gridsize) \
+               if (i,j) not in start_positions and (i,j) not in goal_positions}
+
+    #create mapping (i,j) -> assigned value
+    # root_assignment = {(i,j) : state.get_val(i,j) for (i,j) in list(set(start_positions).union(goal_positions))}
+
+    #run backtrack algorithm
+    return backtrack_search(state, root_domains, gridsize)
 

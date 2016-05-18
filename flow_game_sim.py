@@ -3,6 +3,13 @@ from flow_game_problem import FlowGameProblem
 from flow_search import *
 from flow_game_constants import TransitionModels
 
+def csp_test():
+	fg = FlowGameProblem(5, [[(0,2),(3,0)], [(0,3),(4,3)], [(1,3),(2,1)], [(3,3),(4,4)], [(3,1),(4,0)]])
+	print(fg.get_start_state())
+	print('Min Conflicts')
+	cspSearch(fg)
+
+
 def test1():
 	fg = FlowGameProblem(5, [[(0,2),(3,0)], [(0,3),(4,3)], [(1,3),(2,1)], [(3,3),(4,4)], [(3,1),(4,0)]])
 	print(fg.get_start_state())
@@ -45,7 +52,8 @@ def test4():
 	print(result1)
 
 
+csp_test()
 # test1()
-test2()
+# test2()
 # test3()
 # test4()

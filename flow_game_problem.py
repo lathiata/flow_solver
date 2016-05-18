@@ -97,10 +97,6 @@ class FlowGameProblem:
 
 
 
-# flow game as a constraint satisfaction problem
-#Xi,j != -1 forall i,j 
-#Xi,j == Xp,q for at least 1 adjacent 
-
 
 # beam search?
 

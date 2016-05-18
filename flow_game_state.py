@@ -1,6 +1,10 @@
 import sys
 from termcolor import colored, cprint
-# TODO standardize naming conventions...
+# TODO: standardize naming conventions
+# TODO: make constants for things like empty spaces
+# TODO: create readme for the file
+# TODO: add jquery to gitignore
+
 class FlowGameState:
 	def __init__(self, gridsize, start_positions):
 		self.colors = ['red', 'green', 'blue', 'magenta', 'cyan', 'white', 'yellow']
@@ -56,6 +60,9 @@ class FlowGameState:
 			adj_pos.append((i, j+1))
 
 		return adj_pos
+
+	def get_val(self, i, j):
+		return self.board[i][j]
 
 	def get_gridsize(self):
 		return self.gridsize
