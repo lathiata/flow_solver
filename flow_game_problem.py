@@ -83,16 +83,20 @@ class FlowGameProblem:
 	def heuristic(self, flow_game_state):
 		curr_positions = flow_game_state.get_curr_positions()
 		goal_positions = flow_game_state.get_goal_positions()
-		max_distance = -float('inf')
+		sum_distance = 0
+		# max_distance = -float('inf')
 		for i in range(len(curr_positions)):
 			dist = abs(curr_positions[i][0] - goal_positions[i][0]) + abs(curr_positions[i][1] - goal_positions[i][1])
-			max_distance = max(max_distance, dist)
+			# max_distance = max(max_distance, dist)
+			sum_distance += dist
 
 		#try giving preference to the edges
 		if flow_game_state.border(curr_positions[i]):
-			max_distance /= 4
-		
-		return max_distance
+			# max_distance /= 4
+			sum_distance /= 4
+
+		return sum_distance
+		# return max_distance
 
 
 

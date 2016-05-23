@@ -1,16 +1,17 @@
 import sys
+import flow_game_constants
 from termcolor import colored, cprint
-# TODO: standardize naming conventions
-# TODO: make constants for things like empty spaces
+# TODO: standardize naming conventions (camelCase vs underscore_case)
 # TODO: create readme for the file
-# TODO: add jquery to gitignore
+# TODO: remove any unused set/get attrs
+# TODO: add/standardize comments
 
 class FlowGameState:
 	def __init__(self, gridsize, start_positions):
 		self.colors = ['red', 'green', 'blue', 'magenta', 'cyan', 'white', 'yellow']
 		self.on_colors = ['on_red', 'on_green', 'on_blue', 'on_magenta', 'on_cyan']
 
-		#initialize board, empty spaces are -1
+		#initialize board, empty spaces are flow_game_constants.EMPTY
 		self.gridsize = gridsize
 		self.unoccupied_space = self.gridsize ** 2
 		self.board = []
@@ -18,12 +19,13 @@ class FlowGameState:
 		self.curr_positions = []
 		self.goal_positions = []
 		self.val_colors = {}
+		self.num_colors = len(start_positions)
 
 		j = 0
 		while j < gridsize:
 			self.board.append([])
 			for i in range(self.gridsize):
-				self.board[j].append(-1)
+				self.board[j].append(flow_game_constants.EMPTY)
 			j += 1
 
 		#add start/goal positions
@@ -41,6 +43,9 @@ class FlowGameState:
 
 			#minus two because we add both the 'starting' and the 'goal' positions
 			self.unoccupied_space -= 2
+
+	def get_num_colors(self):
+		return self.num_colors
 
 	def adjacent_positions(self, pos):
 		#returns a list of valid adjacent positions
@@ -116,13 +121,13 @@ class FlowGameState:
 		i = current_position[0]
 		j = current_position[1]
 
-		if i - 1 >= 0 and self.board[i-1][j] == -1:
+		if i - 1 >= 0 and self.board[i-1][j] == flow_game_constants.EMPTY:
 			moves.append((i-1, j))
-		if i + 1 < self.gridsize and self.board[i+1][j] == -1:
+		if i + 1 < self.gridsize and self.board[i+1][j] == flow_game_constants.EMPTY:
 			moves.append((i+1, j))
-		if j - 1 >= 0 and self.board[i][j-1] == -1:
+		if j - 1 >= 0 and self.board[i][j-1] == flow_game_constants.EMPTY:
 			moves.append((i, j-1))
-		if j + 1 < self.gridsize and self.board[i][j+1] == -1:
+		if j + 1 < self.gridsize and self.board[i][j+1] == flow_game_constants.EMPTY:
 			moves.append((i, j+1))
 
 		return moves
