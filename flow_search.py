@@ -3,7 +3,7 @@ from copy import deepcopy
 import random
 import flow_game_constants
 
-#TODO: make this check faster?
+#TODO: make this check faster by having things in the state constantly updating. especially for connected
 def is_satisfied(state, gridsize):
     def has_adjacent(pos, board):
         val = board[pos[0]][pos[1]]
@@ -78,6 +78,7 @@ def aStarSearch(problem, version, Print=False):
         if state.get_board() not in explored:
             i += 1
             if Print:
+                print(i)
                 print(state)
             if problem.goal_test(state):
                 print("done " + str(i))
@@ -98,8 +99,9 @@ def flow_game_search(problem, version, Print=False):
         if state.get_board() not in explored:
             i += 1
             if Print:
+                print(i)
                 print(state)
-                is_satisfied(state, state.get_gridsize())
+                # is_satisfied(state, state.get_gridsize())
             if problem.goal_test(state):
                 print("done " + str(i))
                 return state
@@ -131,23 +133,22 @@ def cspSearch(problem):
     def backtrack_search(state, domains, gridsize):
         if is_satisfied(state, gridsize):
             return state
-        # else:
-        #     next_pos = min(domains, len(key=domains.get)) #select the variable with the fewest things in domain
-        #     for val in domains[next_pos]:
+        else:
+            next_pos = min(domains, len(key=domains.get)) #select the variable with the fewest things in domain
+            for val in domains[next_pos]:
+                if is_consistent(state, next_pos, val):
+                    state_copy = deepcopy(state)
+                    state_copy.move(val, next_pos) #add the position to the state
+                    inference_success, inference = inferences(state_copy, domains)
 
-        #         if is_consistent(state, next_pos, val):
-        #             state_copy = deepcopy(state)
-        #             state_copy.move(val, next_pos) #add the position to the state
-        #             inference_success, inference = inferences(state_copy, domains)
+                    if inference_success:
+                        #TODO: add inferences to state
+                        result = backtrack_search(state_copy, domains, gridsize)
 
-        #             if inference_success:
-        #                 #TODO: add inferences to state
-        #                 result = backtrack_search(state_copy, domains, gridsize)
-
-        #                 if result:
-        #                     return result
+                        if result:
+                            return result
                             
-        #     return None #This path is a failure
+            return None #This path is a failure
 
     state = problem.get_start_state()
     start_positions = state.get_start_positions()
