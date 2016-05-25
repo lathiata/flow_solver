@@ -3,12 +3,14 @@ from copy import deepcopy
 import random
 import flow_game_constants
 
-#TODO: make this check faster by having things in the state constantly updating. especially for connected
+#TODO: make this check faster by having things in the state constantly updating-especially for connectedness.
+#      also this function should probably be in flow_game_problem because the abstraction is that search doesn't
+#      alter the state. 
 def is_satisfied(state, gridsize):
     def has_adjacent(pos, board):
-        val = board[pos[0]][pos[1]]
+        val = state.get_pos_val(pos)
         for adj_pos in state.adjacent_positions(pos):
-            if board[adj_pos[0]][adj_pos[1]] == val:
+            if state.get_pos_val(adj_pos) == val:
                 return True
         return False
 
@@ -19,7 +21,7 @@ def is_satisfied(state, gridsize):
                 return True
 
             next_in_path = [pos for pos in state.adjacent_positions(curr) \
-                            if pos not in explored and board[pos[0]][pos[1]] == val]
+                            if pos not in explored and state.get_pos_val(pos) == val]
             dfs_values = []
             for pos in next_in_path:
                 explored.append(pos)
@@ -38,7 +40,7 @@ def is_satisfied(state, gridsize):
 
 
     board = state.get_board()
-    is_filled = reduce(lambda x, y: x and y, [board[i][j] != flow_game_constants.EMPTY for i in range(gridsize) for j in range(gridsize)])
+    is_filled = reduce(lambda x, y: x and y, [state.get_val(i,j) != flow_game_constants.EMPTY for i in range(gridsize) for j in range(gridsize)])
     is_adjacent = reduce(lambda x, y: x and y, [has_adjacent((i,j), board) for i in range(gridsize) for j in range(gridsize)])
     is_connected = reduce(lambda x, y: x and y, [connected(board, i) for i in range(state.get_num_colors())])
     return is_filled and is_adjacent and is_connected
@@ -101,7 +103,6 @@ def flow_game_search(problem, version, Print=False):
             if Print:
                 print(i)
                 print(state)
-                # is_satisfied(state, state.get_gridsize())
             if problem.goal_test(state):
                 print("done " + str(i))
                 return state

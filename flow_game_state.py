@@ -1,6 +1,7 @@
 import sys
 import flow_game_constants
 from termcolor import colored, cprint
+
 # TODO: order of colors to connect via some heuristic 
 # TODO: have each cell remember the direction the previous cell was going 
 # TODO: standardize naming conventions (camelCase vs underscore_case)
@@ -8,6 +9,7 @@ from termcolor import colored, cprint
 # TODO: remove any unused set/get attrs
 # TODO: add/standardize comments
 # TODO: look up .swp files
+
 class FlowGameState:
 	def __init__(self, gridsize, start_positions):
 		self.colors = ['red', 'green', 'blue', 'magenta', 'cyan', 'white', 'yellow']
@@ -70,6 +72,9 @@ class FlowGameState:
 
 	def get_val(self, i, j):
 		return self.board[i][j]
+
+	def get_pos_val(self, pos):
+		return self.board[pos[0]][pos[1]]
 
 	def get_gridsize(self):
 		return self.gridsize
