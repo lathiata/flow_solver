@@ -3,15 +3,16 @@ import flow_game_constants
 from termcolor import colored, cprint
 
 # TODO: have each cell remember the direction the previous cell was going 
-# TODO: standardize naming conventions (camelCase vs underscore_case)
 # TODO: create readme for the file
-# TODO: remove any unused set/get attrs
 # TODO: add/standardize comments
 # TODO: implement min conflicts
 # TODO: implement k-beam search utilizing multiprocessing
 
 class FlowGameState:
 	def __init__(self, gridsize, start_positions):
+		"""
+		Initialize a Flow gameboard given gridsize and start and goal positions.
+		"""
 		self.colors = ['red', 'green', 'blue', 'magenta', 'cyan', 'white', 'yellow']
 		self.on_colors = ['on_red', 'on_green', 'on_blue', 'on_magenta', 'on_cyan']
 
@@ -61,7 +62,9 @@ class FlowGameState:
 		return self.num_colors
 
 	def adjacent_positions(self, pos):
-		#returns a list of valid adjacent positions
+		"""
+		Returns a list of valid adjacent positions.
+		"""
 		adj_pos = []
 		i, j = pos
 
@@ -94,9 +97,6 @@ class FlowGameState:
 	def is_adjacent(self, pos1, pos2):
 		return abs(pos1[0]-pos2[0]) + abs(pos1[1] - pos2[1]) == 1
 
-	def is_goal(self, pos, i):
-		return pos == self.goal_positions[i]
-
 	def get_board(self):
 		return self.board
 
@@ -115,6 +115,10 @@ class FlowGameState:
 		self.unoccupied_space -= 1
 
 	def reached_goal(self, i):
+		"""
+		True if the current position of the i_th color is adjacent to the i_th goal position.
+		We check this because the goal position is filled into the game board on initialization.
+		"""
 		curr_pos = self.curr_positions[i]
 		goal_pos = self.goal_positions[i]
 		return self.is_adjacent(curr_pos, goal_pos)
@@ -122,8 +126,12 @@ class FlowGameState:
 	def border(self, pos):
 		return pos[0] == 0 or pos[0] == self.gridsize-1 or pos[1] == 0 or pos[1] == self.gridsize-1
 
-	#a helper function for determining whether or not the board is currently in a solvable config
 	def solvable_helper(self, i):
+		"""
+		Helper function for determining whether or not the board is currently in a solvable config.
+		This works by performing every legal move for a color and then checking if the color has
+		filled a square adjacent to the goal.
+		"""
 		goal_pos = self.goal_positions[i]
 		for pos in self.adjacent_positions(goal_pos):
 			if self.board[pos[0]][pos[1]] == i:
@@ -131,22 +139,13 @@ class FlowGameState:
 		return False
 
 
-	#maybe move to flow game problem?
-	def legal_moves(self, current_position):
-		moves = []
-		i = current_position[0]
-		j = current_position[1]
+	def legal_moves(self, curr_pos):
+		"""
+		Returns a list of (x,y) tuples that correspond to open positions adjacent to
+		curr_pos.
+		"""
+		return [pos for pos in self.adjacent_positions(curr_pos) if self.board[pos[0]][pos[1]] == flow_game_constants.EMPTY]
 
-		if i - 1 >= 0 and self.board[i-1][j] == flow_game_constants.EMPTY:
-			moves.append((i-1, j))
-		if i + 1 < self.gridsize and self.board[i+1][j] == flow_game_constants.EMPTY:
-			moves.append((i+1, j))
-		if j - 1 >= 0 and self.board[i][j-1] == flow_game_constants.EMPTY:
-			moves.append((i, j-1))
-		if j + 1 < self.gridsize and self.board[i][j+1] == flow_game_constants.EMPTY:
-			moves.append((i, j+1))
-
-		return moves
 
 	def __repr__(self):
 		ind = 0 

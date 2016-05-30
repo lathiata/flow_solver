@@ -45,9 +45,11 @@ def is_satisfied(state, gridsize):
     is_connected = reduce(lambda x, y: x and y, [connected(board, i) for i in range(state.get_num_colors())])
     return is_filled and is_adjacent and is_connected
 
+# TODO: move to flow_game_problem
 def is_solvable(flow_game_state):
     '''
-    determines if it possible to solve the game from every color's perspective
+    Determines if it possible to solve the game from every color's perspective.
+    See the comment for flow_game_state.solvable_helper for implementation details
     '''
     current_positions = flow_game_state.get_curr_positions()
 
@@ -66,10 +68,10 @@ def is_solvable(flow_game_state):
             
     return True
 
-#this astar seach is really just a greedy search because there is no backwards cost
-def aStarSearch(problem, version, Print=False):
+def greedy_search(problem, version, Print=False):
     '''
-    regular astar search which expands nodes based on heuristic and backwards cost
+    Greedy search.
+    Should be strictly worse than flow_game_search
     '''
     i = 0
     explored = []
@@ -90,7 +92,8 @@ def aStarSearch(problem, version, Print=False):
 
 def flow_game_search(problem, version, Print=False):
     '''
-    greedy variation which does not expand unsolvable nodes
+    Greedy search (Bread First Search with a heuristic).
+    Does not expand unsolvable states (brute force check using is_solvable).
     '''
     i = 0
     explored = []
@@ -110,7 +113,7 @@ def flow_game_search(problem, version, Print=False):
             if is_solvable(state):
                 problem.explore(version, state, frontier)
 
-def cspSearch(problem):
+def csp_search(problem):
     """
     Poses the flow game as a CSP
 
