@@ -4,8 +4,8 @@ import random
 import flow_game_constants
 
 #TODO: make this check faster by having things in the state constantly updating-especially for connectedness.
-#      also this function should probably be in flow_game_problem because the abstraction is that search doesn't
-#      alter the state. 
+#      also this function should probably be in flow_game_problem because the abstraction is that the search
+#      doesn't really know anything about how the problem works (can work for any puzzle)
 def is_satisfied(state, gridsize):
     def has_adjacent(pos, board):
         val = state.get_pos_val(pos)

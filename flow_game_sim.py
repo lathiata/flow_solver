@@ -3,7 +3,11 @@ from flow_game_problem import FlowGameProblem
 from flow_search import *
 from flow_game_constants import TransitionModels
 
-PROBLEM_NUM = 2 #indexes into problems list below
+# TODO: make a command line argument parser to specify search model and problem difficulty
+# TODO: specify problems by difficuly 
+# TODO: change VERSION to specify the search type (min conflicts, greedy, k-beams, etc)
+
+PROBLEM_NUM = 0 #indexes into problems list below
 PRINT = False
 VERSION = TransitionModels.VERSION_1
 
@@ -16,7 +20,7 @@ problems = [FlowGameProblem(5, [[(0,2),(3,0)], [(0,3),(4,3)], [(1,3),(2,1)], [(3
 def test(version, problem):
 	print(problem.get_start_state())
 	print(version)
-	res = flow_game_search(problem, version, PRINT)
-	print(res)
+	result = flow_game_search(problem, version, PRINT)
+	print(result)
 
 test(VERSION, problems[PROBLEM_NUM])
