@@ -51,9 +51,8 @@ class FlowGameState:
 
 		#TODO: come up with a better way to decide whether or not to reorder
 		if flow_game_constants.REORDER:
-			print("Reordering inputs")
 			start_tup, goal_tup = zip(*sorted(zip(self.start_positions, self.goal_positions),\
-							   key= lambda x: abs(x[0][0] - x[1][0]) + abs(x[0][1] - x[1][1])))
+							   	  			  key= lambda x: abs(x[0][0] - x[1][0]) + abs(x[0][1] - x[1][1])))
 			self.start_positions = list(start_tup)
 			self.curr_positions = list(self.start_positions)
 			self.goal_positions = list(goal_tup)
@@ -148,6 +147,9 @@ class FlowGameState:
 
 
 	def __repr__(self):
+		"""
+		Writes a grid representation of the flow game to standard out with nice colors.
+		"""
 		ind = 0 
 		representation = "  "
 

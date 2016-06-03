@@ -69,10 +69,10 @@ def is_solvable(flow_game_state):
     return True
 
 def greedy_search(problem, version, Print=False):
-    '''
+    """
     Greedy search.
     Should be strictly worse than flow_game_search
-    '''
+    """
     i = 0
     explored = []
     frontier = util.PriorityQueue()
@@ -91,10 +91,10 @@ def greedy_search(problem, version, Print=False):
             problem.explore(version, state, frontier)
 
 def flow_game_search(problem, version, Print=False):
-    '''
+    """
     Greedy search (Bread First Search with a heuristic).
     Does not expand unsolvable states (brute force check using is_solvable).
-    '''
+    """
     i = 0
     explored = []
     frontier = util.PriorityQueue()
