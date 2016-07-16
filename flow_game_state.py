@@ -4,7 +4,6 @@ from termcolor import colored, cprint
 
 # TODO: have each cell remember the direction the previous cell was going 
 # TODO: create readme for the file
-# TODO: add/standardize comments
 # TODO: implement min conflicts
 # TODO: implement k-beam search utilizing multiprocessing
 

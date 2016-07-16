@@ -11,13 +11,21 @@ class FlowGameProblem:
 		return self.start_state 
 
 	def goal_test(self, flow_game_state):
+		'''
+		Determine if the game is in a solved state
+		Only works if you are exploring a tree in a way you play the game 
+		Does not work with CSP search which can have break rules
+		'''
 		for i in range(len(flow_game_state.get_curr_positions())):
 			if not flow_game_state.reached_goal(i):
 				return False
 		return flow_game_state.full_grid()
 
 	def explore_v0(self, state, frontier):
-		#a list of dictionaries which represent all of the sets of all possible moves 
+		'''
+		v0 has all colors moving towards their goal states at the same time
+		so a move is a collection of moves for all colors 
+		'''
 		def get_actions_v0(flow_game_state):
 			all_actions = []
 
@@ -54,7 +62,9 @@ class FlowGameProblem:
 			frontier.push(new_state, self.heuristic(new_state))
 
 	def explore_v1(self, state, frontier):
-		#move 1 color 1 square at a time
+		'''
+		v1 will solve one color at a time
+		'''
 		def get_actions_v1(flow_game_state):
 			curr_positions = flow_game_state.get_curr_positions()
 			for i in range(len(curr_positions)):
@@ -73,6 +83,9 @@ class FlowGameProblem:
 
 	#TODO: create a mapping TransitionModel.Version -> explore function
 	def explore(self, version, state, frontier):
+		'''
+		controller function for the different transition models
+		'''
 		if version == TransitionModels.VERSION_0:
 			self.explore_v0(state, frontier)
 		elif version == TransitionModels.VERSION_1:

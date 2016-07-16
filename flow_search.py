@@ -7,6 +7,9 @@ import flow_game_constants
 #      also this function should probably be in flow_game_problem because the abstraction is that the search
 #      doesn't really know anything about how the problem works (can work for any puzzle)
 def is_satisfied(state, gridsize):
+    '''
+    Determines if the board is in a solved state
+    '''
     def has_adjacent(pos, board):
         val = state.get_pos_val(pos)
         for adj_pos in state.adjacent_positions(pos):

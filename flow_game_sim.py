@@ -7,7 +7,7 @@ from flow_game_constants import TransitionModels
 # TODO: specify problems by difficuly 
 # TODO: change VERSION to specify the search type (min conflicts, greedy, k-beams, etc)
 
-PROBLEM_NUM = 2 #indexes into problems list below
+PROBLEM_NUM = 0 #indexes into problems list below
 PRINT = False
 VERSION = TransitionModels.VERSION_1
 
