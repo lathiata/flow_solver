@@ -2,10 +2,11 @@ import sys
 import flow_game_constants
 from termcolor import colored, cprint
 
-# TODO: have each cell remember the direction the previous cell was going 
-# TODO: create readme for the file
-# TODO: implement min conflicts
-# TODO: implement k-beam search utilizing multiprocessing
+# TODO: have each cell remember the direction the previous cell was going
+#       create readme for the file
+#       implement min conflicts
+#       implement k-beam search utilizing multiprocessing
+#		use pep8 style docstring comments
 
 class FlowGameState:
 	def __init__(self, gridsize, start_positions):
@@ -149,7 +150,7 @@ class FlowGameState:
 		"""
 		Writes a grid representation of the flow game to standard out with nice colors.
 		"""
-		ind = 0 
+		ind = 0
 		representation = "  "
 
 		#add column headers
@@ -170,12 +171,10 @@ class FlowGameState:
 					else:
 						first = ind/len(self.colors)
 						second = ind%len(self.colors)
-						self.val_colors[val] = colored(val, self.colors[first], self.on_colors[second]) 
+						self.val_colors[val] = colored(val, self.colors[first], self.on_colors[second])
 					ind += 1
 				val_colored = self.val_colors[val]
 
 				representation += val_colored + "|"
 			representation += "\n"
 		return representation
-
-

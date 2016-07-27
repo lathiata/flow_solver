@@ -34,7 +34,7 @@ def is_satisfied(state, gridsize):
                 return False #reached end of path and nothing
 
             return reduce(lambda x, y: x or y, dfs_values)
-            
+
         curr = state.get_start_positions()[i]
         goal = state.get_goal_positions()[i]
 
@@ -68,7 +68,7 @@ def is_solvable(flow_game_state):
 
         if not state.solvable_helper(i):
             return False
-            
+
     return True
 
 def greedy_search(problem, version, Print=False):
@@ -124,8 +124,8 @@ def csp_search(problem):
     Forward check
     Backwards check
 
-    Xi,j != flow_game_constants.EMPTY for all i,j 
-    Xi,j == Xp,q for at least 1 adjacent 
+    Xi,j != flow_game_constants.EMPTY for all i,j
+    Xi,j == Xp,q for at least 1 adjacent
     Xi,j is connected to Xp,q for Xi,j in start and Xp,q corresponding ending
     """
     def inferences(state, domains):
@@ -133,7 +133,7 @@ def csp_search(problem):
 
     def is_consistent(state, pos, val):
         pass
-        
+
     #recursively perform backtrack search (DFS w/ improvement)
     #foward checking
     #maintain arc consistency
@@ -154,7 +154,7 @@ def csp_search(problem):
 
                         if result:
                             return result
-                            
+
             return None #This path is a failure
 
     state = problem.get_start_state()
@@ -173,4 +173,3 @@ def csp_search(problem):
 
     #run backtrack algorithm
     return backtrack_search(state, root_domains, gridsize)
-

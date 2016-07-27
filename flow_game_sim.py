@@ -30,13 +30,12 @@ def validate_args(args):
 	'''
 	if args.difficulty not in DIFFICULTY.keys() or args.search_model not in SEARCH_MODEL.keys():
 		return False, None, None
-
 	return True, random.choice(DIFFICULTY[args.difficulty]), SEARCH_MODEL[args.search_model]
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("difficulty", help="complexity of puzzle: easy, medium, hard")
-parser.add_argument("search_model", help="name of search model: single, multi")
+parser.add_argument("difficulty", nargs='?', help="complexity of puzzle: easy, medium, hard", type=str, default="easy")
+parser.add_argument("search_model", nargs='?', help="name of search model: single, multi", type=str, default="single")
 args = parser.parse_args()
 success, problem, version = validate_args(args)
 
