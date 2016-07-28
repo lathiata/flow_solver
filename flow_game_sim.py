@@ -34,7 +34,7 @@ def validate_args(args):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("difficulty", nargs='?', help="complexity of puzzle: easy, medium, hard", type=str, default="easy")
+parser.add_argument("difficulty", nargs='?', help="complexity of puzzle: easy, medium, hard", type=str, default="hard")
 parser.add_argument("search_model", nargs='?', help="name of search model: single, multi", type=str, default="single")
 args = parser.parse_args()
 success, problem, version = validate_args(args)

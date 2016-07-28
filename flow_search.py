@@ -71,28 +71,6 @@ def is_solvable(flow_game_state):
 
     return True
 
-def greedy_search(problem, version, Print=False):
-    """
-    Greedy search.
-    Should be strictly worse than flow_game_search
-    """
-    i = 0
-    explored = []
-    frontier = util.PriorityQueue()
-    frontier.push(problem.get_start_state(), problem.heuristic(problem.get_start_state()))
-    while not frontier.isEmpty():
-        state = frontier.pop()
-        if state.get_board() not in explored:
-            i += 1
-            if Print:
-                print(i)
-                print(state)
-            if problem.goal_test(state):
-                print("done " + str(i))
-                return state
-            explored.append(state.get_board())
-            problem.explore(version, state, frontier)
-
 def flow_game_search(problem, version, Print=False):
     """
     Greedy search (Bread First Search with a heuristic).
@@ -149,7 +127,7 @@ def csp_search(problem):
                     inference_success, inference = inferences(state_copy, domains)
 
                     if inference_success:
-                        #TODO: add inferences to state
+                        #TODO add inference to {state, domains}
                         result = backtrack_search(state_copy, domains, gridsize)
 
                         if result:
@@ -164,12 +142,11 @@ def csp_search(problem):
 
     #create mapping (i,j) -> (possible values)
     root_domains = {(i,j) : range(len(state.get_start_positions())) \
+               if (i,j) not in start_positions and (i,j) not in goal_positions \
+               else state.get_val(i,j) \
                for i in range(gridsize) \
                for j in range(gridsize) \
-               if (i,j) not in start_positions and (i,j) not in goal_positions}
-
-    #create mapping (i,j) -> assigned value
-    # root_assignment = {(i,j) : state.get_val(i,j) for (i,j) in list(set(start_positions).union(goal_positions))}
+               }
 
     #run backtrack algorithm
     return backtrack_search(state, root_domains, gridsize)

@@ -8,12 +8,12 @@ class FlowGameProblem:
 		self.start_state = FlowGameState(gridsize, start_positions)
 
 	def get_start_state(self):
-		return self.start_state 
+		return self.start_state
 
 	def goal_test(self, flow_game_state):
 		'''
 		Determine if the game is in a solved state
-		Only works if you are exploring a tree in a way you play the game 
+		Only works if you are exploring a tree in a way you play the game
 		Does not work with CSP search which can have break rules
 		'''
 		for i in range(len(flow_game_state.get_curr_positions())):
@@ -24,7 +24,7 @@ class FlowGameProblem:
 	def explore_v0(self, state, frontier):
 		'''
 		v0 has all colors moving towards their goal states at the same time
-		so a move is a collection of moves for all colors 
+		so a move is a collection of moves for all colors
 		'''
 		def get_actions_v0(flow_game_state):
 			all_actions = []

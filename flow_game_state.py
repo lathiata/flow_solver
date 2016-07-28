@@ -148,7 +148,7 @@ class FlowGameState:
 
 	def __repr__(self):
 		"""
-		Writes a grid representation of the flow game to standard out with nice colors.
+		Writes a grid representation of the flow game with nice colors.
 		"""
 		ind = 0
 		representation = "  "
