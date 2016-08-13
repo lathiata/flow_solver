@@ -81,7 +81,7 @@ class FlowGameProblem:
 			new_state = get_result_v1(state, action, color)
 			frontier.push(new_state, self.heuristic(new_state))
 
-	#TODO: create a mapping TransitionModel.Version -> explore function
+	#TODO create a mapping TransitionModel.Version -> explore function
 	def explore(self, version, state, frontier):
 		'''
 		controller function for the different transition models
@@ -91,7 +91,8 @@ class FlowGameProblem:
 		elif version == TransitionModels.VERSION_1:
 			self.explore_v1(state, frontier)
 
-	#TODO: implement better heuristic
+	#TODO implement better heuristic - update the edge as we fill in squares
+	#	  doesn't make sense for constraint satisfaction though
 	def heuristic(self, flow_game_state):
 		curr_positions = flow_game_state.get_curr_positions()
 		goal_positions = flow_game_state.get_goal_positions()

@@ -3,7 +3,7 @@ from copy import deepcopy
 import random
 import flow_game_constants
 
-#TODO: make this check faster by having things in the state constantly updating-especially for connectedness.
+#TODO  make this check faster by having things in the state constantly updating-especially for connectedness.
 #      also this function should probably be in flow_game_problem because the abstraction is that the search
 #      doesn't really know anything about how the problem works (can work for any puzzle)
 def is_satisfied(state, gridsize):
@@ -48,7 +48,7 @@ def is_satisfied(state, gridsize):
     is_connected = reduce(lambda x, y: x and y, [connected(board, i) for i in range(state.get_num_colors())])
     return is_filled and is_adjacent and is_connected
 
-# TODO: move to flow_game_problem
+#TODO move to flow_game_problem
 def is_solvable(flow_game_state):
     '''
     Determines if it possible to solve the game from every color's perspective.
@@ -73,7 +73,7 @@ def is_solvable(flow_game_state):
 
 def flow_game_search(problem, version, Print=False):
     """
-    Greedy search (Bread First Search with a heuristic).
+    Greedy search (Breadth First Search with a heuristic).
     Does not expand unsolvable states (brute force check using is_solvable).
     """
     i = 0
@@ -94,6 +94,8 @@ def flow_game_search(problem, version, Print=False):
             if is_solvable(state):
                 problem.explore(version, state, frontier)
 
+#TODO have an algorithm that checks if i can meet all constraints still
+#     still running into the problem of making the constraints easy to check (connectedness)
 def csp_search(problem):
     """
     Poses the flow game as a CSP
@@ -102,9 +104,17 @@ def csp_search(problem):
     Forward check
     Backwards check
 
-    Xi,j != flow_game_constants.EMPTY for all i,j
-    Xi,j == Xp,q for at least 1 adjacent
-    Xi,j is connected to Xp,q for Xi,j in start and Xp,q corresponding ending
+    forall (i,j) :
+        Xi,j != flow_game_constants.EMPTY
+
+    forall (i,j) not in starting positions, there exists adjacent (p,q) and (a,b) :
+        Xi,j == Xp,q
+        Xi,j == Xa,b
+
+    forall (i,j) in starting positions, there exists adjacent (p,q) :
+        Xi,j == Xp,q
+
+    forall (i,j) in starting positions, there exists a path to the corresponding ending position (p,q)
     """
     def inferences(state, domains):
         pass

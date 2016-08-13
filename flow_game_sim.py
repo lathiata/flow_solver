@@ -5,10 +5,11 @@ from flow_game_problem import FlowGameProblem
 from flow_search import *
 from flow_game_constants import TransitionModels
 
-# TODO: change VERSION to specify the search type (min conflicts, flow_search, k-beams, etc)
+#TODO	change VERSION to specify the search type (min conflicts, flow_search, k-beams, etc)
 #		will be interesting bc VERSION refers to transition model but these are search algs
 PRINT = False
 
+#TODO move to constants ?
 EASY_PUZZLES = [FlowGameProblem(5, [[(0,2),(3,0)], [(0,3),(4,3)], [(1,3),(2,1)], [(3,3),(4,4)], [(3,1),(4,0)]])]
 MEDIUM_PUZZLES = [FlowGameProblem(8, [[(0,0),(3,0)], [(4,0),(7,6)], [(2,1),(3,5)], [(2,2),(1,6)], [(2,3),(3,6)], [(4,1),(6,1)],
 							 		 [(3,1), (4,4)], [(4,3),(6,6)], [(5,3),(7,7)]])]
@@ -34,7 +35,7 @@ def validate_args(args):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("difficulty", nargs='?', help="complexity of puzzle: easy, medium, hard", type=str, default="hard")
+parser.add_argument("difficulty", nargs='?', help="complexity of puzzle: easy, medium, hard", type=str, default="easy")
 parser.add_argument("search_model", nargs='?', help="name of search model: single, multi", type=str, default="single")
 args = parser.parse_args()
 success, problem, version = validate_args(args)

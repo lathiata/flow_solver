@@ -2,10 +2,11 @@ import sys
 import flow_game_constants
 from termcolor import colored, cprint
 
-# TODO: have each cell remember the direction the previous cell was going
+#TODO   have each cell remember the direction the previous cell was going
 #       create readme for the file
-#       implement min conflicts
-#       implement k-beam search utilizing multiprocessing
+#       implement min conflict search
+#		implement csp search with back tracking & arc consistency
+#       implement k-beam search
 #		use pep8 style docstring comments
 
 class FlowGameState:
@@ -49,7 +50,7 @@ class FlowGameState:
 			#minus two because we add both the 'starting' and the 'goal' positions
 			self.unoccupied_space -= 2
 
-		#TODO: come up with a better way to decide whether or not to reorder
+		#TODO come up with a better way to decide whether or not to reorder
 		if flow_game_constants.REORDER:
 			start_tup, goal_tup = zip(*sorted(zip(self.start_positions, self.goal_positions),\
 							   	  			  key= lambda x: abs(x[0][0] - x[1][0]) + abs(x[0][1] - x[1][1])))
