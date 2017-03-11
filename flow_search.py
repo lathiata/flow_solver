@@ -3,10 +3,10 @@ from copy import deepcopy
 import random
 import flow_game_constants
 
-#TODO  make this check faster by having things in the state constantly updating-especially for connectedness.
+# TODO  make this check faster by having things in the state constantly updating-especially for connectedness.
 #      also this function should probably be in flow_game_problem because the abstraction is that the search
 #      doesn't really know anything about how the problem works (can work for any puzzle)
-def is_satisfied(state, gridsize):
+def _is_satisfied(state, gridsize):
     '''
     Determines if the board is in a solved state
     '''
@@ -48,7 +48,7 @@ def is_satisfied(state, gridsize):
     is_connected = reduce(lambda x, y: x and y, [connected(board, i) for i in range(state.get_num_colors())])
     return is_filled and is_adjacent and is_connected
 
-#TODO move to flow_game_problem
+# TODO move to flow_game_problem
 def is_solvable(flow_game_state):
     '''
     Determines if it possible to solve the game from every color's perspective.
@@ -88,13 +88,13 @@ def flow_game_search(problem, version, Print=False):
                 print(i)
                 print(state)
             if problem.goal_test(state):
-                print("done " + str(i))
+                print("Explored {} states".format(i))
                 return state
             explored.append(state.get_board)
             if is_solvable(state):
                 problem.explore(version, state, frontier)
 
-#TODO have an algorithm that checks if i can meet all constraints still
+# TODO have an algorithm that checks if i can meet all constraints still
 #     still running into the problem of making the constraints easy to check (connectedness)
 def csp_search(problem):
     """
@@ -126,7 +126,7 @@ def csp_search(problem):
     #foward checking
     #maintain arc consistency
     def backtrack_search(state, domains, gridsize):
-        if is_satisfied(state, gridsize):
+        if _is_satisfied(state, gridsize):
             return state
         else:
             next_pos = min(domains, len(key=domains.get)) #select the variable with the fewest things in domain
