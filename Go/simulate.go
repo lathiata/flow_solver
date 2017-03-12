@@ -10,6 +10,15 @@ import (
 // inputs and runs the indicated algorithm to solve it
 
 func main() {
-	b := NewBoard(5)
-	log.Printf("Starting flow game simulation with board: %v", b)
+	xCoords := []int{0, 3, 0, 4, 1, 2, 3, 4, 3, 4}
+	yCoords := []int{2, 0, 3, 3, 3, 1, 3, 4, 1, 0}
+	gridSize := 5
+	numColors := 5
+	p := NewProblem(gridSize, numColors, xCoords, yCoords)
+	err := p.Validate()
+	if err != nil {
+		log.Fatal(err)
+	}
+	b := NewBoard(p)
+	log.Printf("Starting flow game simulation with board:\n %s", b.String())
 }
