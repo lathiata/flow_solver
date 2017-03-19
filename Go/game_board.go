@@ -14,7 +14,7 @@ const (
 )
 
 var (
-	Colors = []func(format string, a ...interface{})string{
+	Colors = []func(format string, a ...interface{}) string{
 		color.BlueString,
 		color.RedString,
 		color.WhiteString,
@@ -37,19 +37,23 @@ type BoardImplementation struct {
 	cells    []Cell
 }
 
-func NewBoard(p *Problem) *BoardImplementation {
-	numCells := p.gridSize * p.gridSize
+func NewBoard(p Problem) *BoardImplementation {
+	numCells := p.GridSize() * p.GridSize()
 	cells := make([]Cell, numCells)
 	for i := 0; i < numCells; i++ {
 		cells[i] = NewCell()
 	}
 
 	val := 0
-	for i := 0; i < len(p.xCoords); i++ {
-		x := p.xCoords[i]
-		y := p.yCoords[i]
-		index := x*p.gridSize + y
-		err := cells[index].Fill((val))
+	for i := 0; i < p.NumColors()*2; i++ {
+		coords, err := p.ColorCoords(i)
+		if err != nil {
+			log.Fatal(err)
+		}
+		x := coords[0]
+		y := coords[1]
+		index := x*p.GridSize() + y
+		err = cells[index].Fill((val))
 		if err != nil {
 			log.Fatal("Cell was already filled in - there are repeated values in the problem")
 		}
@@ -59,7 +63,7 @@ func NewBoard(p *Problem) *BoardImplementation {
 	}
 
 	return &BoardImplementation{
-		gridSize: p.gridSize,
+		gridSize: p.GridSize(),
 		cells:    cells,
 	}
 }

@@ -10,12 +10,21 @@ import (
 // inputs and runs the indicated algorithm to solve it
 
 func main() {
-	xCoords := []int{0, 3, 0, 4, 1, 2, 3, 4, 3, 4}
-	yCoords := []int{2, 0, 3, 3, 3, 1, 3, 4, 1, 0}
+	coords := [][]int{
+		[]int{0, 2},
+		[]int{3, 0},
+		[]int{0, 3},
+		[]int{4, 3},
+		[]int{1, 3},
+		[]int{2, 1},
+		[]int{3, 3},
+		[]int{4, 4},
+		[]int{3, 1},
+		[]int{4, 0},
+	}
 	gridSize := 5
 	numColors := 5
-	p := NewProblem(gridSize, numColors, xCoords, yCoords)
-	err := p.Validate()
+	p, err := NewProblem(gridSize, numColors, coords)
 	if err != nil {
 		log.Fatal(err)
 	}
