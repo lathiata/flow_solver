@@ -5,6 +5,10 @@ import (
 	"strconv"
 )
 
+const (
+	Empty = -1
+)
+
 // TODO(tanay) document interface methods
 type Cell interface {
 	Fill(val int) error

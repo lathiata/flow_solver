@@ -9,10 +9,6 @@ import (
 	"github.com/fatih/color"
 )
 
-const (
-	Empty = -1
-)
-
 var (
 	Colors = []func(format string, a ...interface{}) string{
 		color.BlueString,
@@ -28,13 +24,14 @@ var (
 // TODO(tanay) document interface methods
 type Board interface {
 	GetCell(x, y int) (Cell, error)
-	Explore(c Cell) ([]Cell, error)
 	IsSatisfied() bool
+	Equals(board Board) bool
+	Problem() Problem
 }
 
 type BoardImplementation struct {
-	gridSize int
-	cells    []Cell
+	cells   []Cell
+	problem Problem
 }
 
 func NewBoard(p Problem) *BoardImplementation {
@@ -63,8 +60,8 @@ func NewBoard(p Problem) *BoardImplementation {
 	}
 
 	return &BoardImplementation{
-		gridSize: p.GridSize(),
-		cells:    cells,
+		cells:   cells,
+		problem: p,
 	}
 }
 
@@ -76,20 +73,34 @@ func (b *BoardImplementation) GetCell(x, y int) (Cell, error) {
 	return b.cells[index], nil
 }
 
-// TODO(tanay)
-func (b *BoardImplementation) Explore(c Cell) ([]Cell, error) {
-	return nil, nil
-}
-
-// TODO(tanay)
+// TODO(tanay) will only be useful in CSP search where you
+// can make non-legal moves
 func (b *BoardImplementation) IsSatisfied() bool {
 	return true
 }
 
+func (b *BoardImplementation) Equals(board Board) bool {
+	if b.Problem().GridSize() != board.Problem().GridSize() {
+		return false
+	}
+
+	for x := 0; x < b.Problem().GridSize(); x++ {
+		for y := 0; y < b.Problem().GridSize(); y++ {
+			if b.GetCell(x, y).Val() != board.GetCell(x, y).Val() {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func (b *BoardImplementation) Problem() Problem {
+	return b.problem
+}
+
 func (b *BoardImplementation) String() string {
 	reprString := "  "
-	// ind := 0 //used for keeping track of colors
-
 	// column headers
 	for i := 0; i < b.gridSize; i++ {
 		reprString += strconv.Itoa(i)
@@ -101,6 +112,7 @@ func (b *BoardImplementation) String() string {
 
 	// fill in rest of grid
 	for i := 0; i < b.gridSize; i++ {
+		// row headers
 		reprString += strconv.Itoa(i) + "|"
 		for j := 0; j < b.gridSize; j++ {
 			cell, err := b.GetCell(i, j)
