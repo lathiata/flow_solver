@@ -22,19 +22,19 @@ var (
 )
 
 // TODO(tanay) document interface methods
-type Board interface {
+type state interface {
 	GetCell(x, y int) (Cell, error)
 	IsSatisfied() bool
-	Equals(board Board) bool
+	Equals(s state) bool
 	Problem() Problem
 }
 
-type BoardImplementation struct {
+type stateImplementation struct {
 	cells   []Cell
 	problem Problem
 }
 
-func NewBoard(p Problem) *BoardImplementation {
+func NewState(p Problem) *stateImplementation {
 	numCells := p.GridSize() * p.GridSize()
 	cells := make([]Cell, numCells)
 	for i := 0; i < numCells; i++ {
@@ -59,13 +59,13 @@ func NewBoard(p Problem) *BoardImplementation {
 		}
 	}
 
-	return &BoardImplementation{
+	return &stateImplementation{
 		cells:   cells,
 		problem: p,
 	}
 }
 
-func (b *BoardImplementation) GetCell(x, y int) (Cell, error) {
+func (b *stateImplementation) GetCell(x, y int) (Cell, error) {
 	if x < 0 || x >= b.gridSize || y < 0 || y >= b.gridSize {
 		return nil, errors.New("Cell out of bounds")
 	}
@@ -75,18 +75,18 @@ func (b *BoardImplementation) GetCell(x, y int) (Cell, error) {
 
 // TODO(tanay) will only be useful in CSP search where you
 // can make non-legal moves
-func (b *BoardImplementation) IsSatisfied() bool {
+func (b *stateImplementation) IsSatisfied() bool {
 	return true
 }
 
-func (b *BoardImplementation) Equals(board Board) bool {
-	if b.Problem().GridSize() != board.Problem().GridSize() {
+func (b *stateImplementation) Equals(s state) bool {
+	if b.Problem().GridSize() != s.Problem().GridSize() {
 		return false
 	}
 
 	for x := 0; x < b.Problem().GridSize(); x++ {
 		for y := 0; y < b.Problem().GridSize(); y++ {
-			if b.GetCell(x, y).Val() != board.GetCell(x, y).Val() {
+			if b.GetCell(x, y).Val() != s.GetCell(x, y).Val() {
 				return false
 			}
 		}
@@ -95,11 +95,11 @@ func (b *BoardImplementation) Equals(board Board) bool {
 	return true
 }
 
-func (b *BoardImplementation) Problem() Problem {
+func (b *stateImplementation) Problem() Problem {
 	return b.problem
 }
 
-func (b *BoardImplementation) String() string {
+func (b *stateImplementation) String() string {
 	reprString := "  "
 	// column headers
 	for i := 0; i < b.gridSize; i++ {
