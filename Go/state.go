@@ -67,10 +67,10 @@ func NewState(p Problem) *stateImplementation {
 }
 
 func (s *stateImplementation) GetCell(x, y int) (Cell, error) {
-	if x < 0 || x >= s.gridSize || y < 0 || y >= s.gridSize {
+	if x < 0 || x >= s.Problem().GridSize() || y < 0 || y >= s.Problem().GridSize() {
 		return nil, errors.New("Cell out of bounds")
 	}
-	index := x*s.gridSize + y
+	index := x*s.Problem().GridSize() + y
 	return s.cells[index], nil
 }
 
@@ -91,7 +91,11 @@ func (b *stateImplementation) Equals(s state) bool {
 
 	for x := 0; x < b.Problem().GridSize(); x++ {
 		for y := 0; y < b.Problem().GridSize(); y++ {
-			if b.GetCell(x, y).Val() != s.GetCell(x, y).Val() {
+			cell1, err := b.GetCell(x, y)
+			log.Fatal(err)
+			cell2, err := s.GetCell(x, y)
+			log.Fatal(err)
+			if cell1.Val() != cell2.Val() {
 				return false
 			}
 		}
@@ -107,19 +111,19 @@ func (s *stateImplementation) Problem() Problem {
 func (s *stateImplementation) String() string {
 	reprString := "  "
 	// column headers
-	for i := 0; i < s.gridSize; i++ {
+	for i := 0; i < s.Problem().GridSize(); i++ {
 		reprString += strconv.Itoa(i)
-		if i != s.gridSize-1 {
+		if i != s.Problem().GridSize()-1 {
 			reprString += "|"
 		}
 	}
 	reprString += "\n"
 
 	// fill in rest of grid
-	for i := 0; i < s.gridSize; i++ {
+	for i := 0; i < s.Problem().GridSize(); i++ {
 		// row headers
 		reprString += strconv.Itoa(i) + "|"
-		for j := 0; j < s.gridSize; j++ {
+		for j := 0; j < s.Problem().GridSize(); j++ {
 			cell, err := s.GetCell(i, j)
 			if err != nil {
 				return err.Error()

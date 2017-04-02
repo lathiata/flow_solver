@@ -16,13 +16,12 @@ type coordinator struct {
 	explored        []state
 	frontier        []state
 	lock            sync.Locker
-	waitGroup       sync.WaitGroup
-	cond            sync.Cond
+	waitGroup       *sync.WaitGroup
+	cond            *sync.Cond
 }
 
 // TODO(tanay) should this check if initialState is solved?
 func NewCoordinator(initialState state) *coordinator {
-	cL := &sync.Mutex{}
 	return &coordinator{
 		transitionModel: &TransitionModelImplementation{},
 		isSolved:        false,
@@ -104,7 +103,7 @@ func (c *coordinator) helper() {
 		} else {
 			for _, ns := range filteredNextStates {
 				unique := true
-				for s := range c.explored {
+				for _, s := range c.explored {
 					if ns.Equals(s) {
 						unique = false
 						break
