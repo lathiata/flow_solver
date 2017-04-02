@@ -10,7 +10,9 @@ type TransitionModel interface {
 type TransitionModelImplementation struct {
 }
 
-// TODO(tanay)
 func (t *TransitionModelImplementation) Explore(s state) []state {
-	return nil
+	nextStates := make([]state, 0)
+	// First find the next color to solve
+
+	return nextStates
 }

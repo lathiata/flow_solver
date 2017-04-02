@@ -28,6 +28,7 @@ type state interface {
 	IsSatisfiable() bool
 	Equals(s state) bool
 	Problem() Problem
+	Serialize() string
 }
 
 type stateImplementation struct {
@@ -106,6 +107,20 @@ func (b *stateImplementation) Equals(s state) bool {
 
 func (s *stateImplementation) Problem() Problem {
 	return s.problem
+}
+
+func (s *stateImplementation) Serialize() string {
+	serializedState := ""
+	for x := 0; x < s.Problem().GridSize(); x++ {
+		for y := 0; y < s.Problem().GridSize(); y++ {
+			cell, err := s.GetCell(x, y)
+			if err != nil {
+				log.Fatal(err)
+			}
+			serializedState += strconv.Itoa(cell.Val())
+		}
+	}
+	return serializedState
 }
 
 func (s *stateImplementation) String() string {
