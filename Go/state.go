@@ -22,6 +22,7 @@ var (
 )
 
 // TODO(tanay) document interface methods
+// TODO(tanay) might be able to remove Equals method (thanks to serialize)
 type state interface {
 	GetCell(x, y int) (Cell, error)
 	IsSatisfied() bool
@@ -44,21 +45,26 @@ func NewState(p Problem) *stateImplementation {
 	}
 
 	val := 0
-	for i := 0; i < p.NumColors()*2; i++ {
+	for i := 0; i < p.NumColors(); i++ {
 		coords, err := p.ColorCoords(i)
 		if err != nil {
 			log.Fatal(err)
 		}
-		x := coords[0]
-		y := coords[1]
-		index := x*p.GridSize() + y
-		err = cells[index].Fill((val))
+		x1 := coords[0][0]
+		y1 := coords[0][1]
+		x2 := coords[1][0]
+		y2 := coords[1][1]
+		index1 := x1*p.GridSize() + y1
+		err = cells[index1].Fill((val))
 		if err != nil {
 			log.Fatal("Cell was already filled in - there are repeated values in the problem")
 		}
-		if math.Mod(float64(i), float64(2)) != float64(0) {
-			val += 1
+		index2 := x2*p.GridSize() + y2
+		err = cells[index2].Fill((val))
+		if err != nil {
+			log.Fatal("Cell was already filled in - there are repeated values in the problem")
 		}
+		val += 1
 	}
 
 	return &stateImplementation{

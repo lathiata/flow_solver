@@ -8,7 +8,11 @@ import (
 type Problem interface {
 	GridSize() int
 	NumColors() int
-	ColorCoords(i int) ([]int, error)
+	// ColorCoords returns a length two, two-d array
+	// the first array is the "starting coord" for that color
+	// the second is the "ending coord" for that color
+	// pass in the index of the color you want to see (its value)
+	ColorCoords(i int) ([][]int, error)
 }
 
 type ProblemImplementation struct {
@@ -40,11 +44,14 @@ func (p *ProblemImplementation) NumColors() int {
 	return p.numColors
 }
 
-func (p *ProblemImplementation) ColorCoords(i int) ([]int, error) {
-	if i >= p.numColors*2 || i < 0 {
+func (p *ProblemImplementation) ColorCoords(i int) ([][]int, error) {
+	if i >= p.numColors || i < 0 {
 		return nil, errors.New(fmt.Sprintf("index i, %d, out of range", i))
 	}
-	return p.coords[i], nil
+	coords := make([][]int, 2)
+	coords[0] = p.coords[i*2]
+	coords[1] = p.coords[i*2+1]
+	return coords, nil
 }
 
 // TODO(tanay) fix this based on what is available
