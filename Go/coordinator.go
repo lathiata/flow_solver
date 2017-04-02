@@ -46,7 +46,9 @@ func (c *coordinator) solve() state {
 	return c.solution
 }
 
-// TODO(tanay) I should use a cond variable to sleep the thread
+// TODO(tanay) do i need to deal with the case when all colors are "solved" but
+// not all spaces are filled (dont think so explicitly, will just keep searching tree
+
 // if there is nothing in the frontier. Then, wake the thread up
 // once something is placed back onto the frontier
 func (c *coordinator) helper() {

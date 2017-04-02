@@ -25,11 +25,13 @@ var (
 // TODO(tanay) might be able to remove Equals method (thanks to serialize)
 type state interface {
 	GetCell(x, y int) (Cell, error)
+	AdjacentCells(x, y int) ([]Cell, error)
 	IsSatisfied() bool
 	IsSatisfiable() bool
 	Equals(s state) bool
 	Problem() Problem
 	Serialize() string
+	Copy() state
 }
 
 type stateImplementation struct {
@@ -73,26 +75,50 @@ func NewState(p Problem) *stateImplementation {
 	}
 }
 
-func (s *stateImplementation) GetCell(x, y int) (Cell, error) {
+func (s *stateImplementation) inbounds(x, y int) bool {
 	if x < 0 || x >= s.Problem().GridSize() || y < 0 || y >= s.Problem().GridSize() {
+		return false
+	}
+	return true
+}
+
+func (s *stateImplementation) GetCell(x, y int) (Cell, error) {
+	if !s.inbounds(x, y) {
 		return nil, errors.New("Cell out of bounds")
 	}
+
 	index := x*s.Problem().GridSize() + y
 	return s.cells[index], nil
+}
+
+func (s *stateImplementation) AdjacentCells(x, y int) ([]Cell, error) {
+	adjacentCells := make([]Cell, 0)
+	if !s.inbounds(x, y) {
+		return nil, errors.New("Cell out of bounds")
+	}
+
+	for i := x - 1; i <= x+1; i++ {
+		for j := y - 1; j <= y+1; j++ {
+			cell, err := s.GetCell(i, j)
+			if err != nil && !(x == i && y == j) {
+				adjacentCells = append(adjacentCells, cell)
+			}
+		}
+	}
+	return adjacentCells, nil
 }
 
 func (s *stateImplementation) IsSatsifiable() bool {
 	return true
 }
 
-// TODO(tanay) will only be useful in CSP search where you
-// can make non-legal moves
 func (s *stateImplementation) IsSatisfied() bool {
 	return true
 }
 
-func (b *stateImplementation) Equals(s state) bool {
-	if b.Problem().GridSize() != s.Problem().GridSize() {
+func (s *stateImplementation) Equals(b state) bool {
+	if b.Problem().GridSize() != s.Problem().GridSize() ||
+		b.Problem().NumColors() != s.Problem().NumColors() {
 		return false
 	}
 
@@ -127,6 +153,11 @@ func (s *stateImplementation) Serialize() string {
 		}
 	}
 	return serializedState
+}
+
+//TODO(tanay)
+func (s *stateImplementation) Copy() *stateImplementation {
+	return nil
 }
 
 func (s *stateImplementation) String() string {
