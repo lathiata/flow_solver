@@ -25,6 +25,7 @@ var (
 type state interface {
 	GetCell(x, y int) (Cell, error)
 	IsSatisfied() bool
+	IsSatisfiable() bool
 	Equals(s state) bool
 	Problem() Problem
 }
@@ -65,17 +66,21 @@ func NewState(p Problem) *stateImplementation {
 	}
 }
 
-func (b *stateImplementation) GetCell(x, y int) (Cell, error) {
-	if x < 0 || x >= b.gridSize || y < 0 || y >= b.gridSize {
+func (s *stateImplementation) GetCell(x, y int) (Cell, error) {
+	if x < 0 || x >= s.gridSize || y < 0 || y >= s.gridSize {
 		return nil, errors.New("Cell out of bounds")
 	}
-	index := x*b.gridSize + y
-	return b.cells[index], nil
+	index := x*s.gridSize + y
+	return s.cells[index], nil
+}
+
+func (s *stateImplementation) IsSatsifiable() bool {
+	return true
 }
 
 // TODO(tanay) will only be useful in CSP search where you
 // can make non-legal moves
-func (b *stateImplementation) IsSatisfied() bool {
+func (s *stateImplementation) IsSatisfied() bool {
 	return true
 }
 
@@ -95,27 +100,27 @@ func (b *stateImplementation) Equals(s state) bool {
 	return true
 }
 
-func (b *stateImplementation) Problem() Problem {
-	return b.problem
+func (s *stateImplementation) Problem() Problem {
+	return s.problem
 }
 
-func (b *stateImplementation) String() string {
+func (s *stateImplementation) String() string {
 	reprString := "  "
 	// column headers
-	for i := 0; i < b.gridSize; i++ {
+	for i := 0; i < s.gridSize; i++ {
 		reprString += strconv.Itoa(i)
-		if i != b.gridSize-1 {
+		if i != s.gridSize-1 {
 			reprString += "|"
 		}
 	}
 	reprString += "\n"
 
 	// fill in rest of grid
-	for i := 0; i < b.gridSize; i++ {
+	for i := 0; i < s.gridSize; i++ {
 		// row headers
 		reprString += strconv.Itoa(i) + "|"
-		for j := 0; j < b.gridSize; j++ {
-			cell, err := b.GetCell(i, j)
+		for j := 0; j < s.gridSize; j++ {
+			cell, err := s.GetCell(i, j)
 			if err != nil {
 				return err.Error()
 			}
