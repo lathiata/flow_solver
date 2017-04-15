@@ -37,42 +37,41 @@ type state interface {
 type stateImplementation struct {
 	cells   []Cell
 	problem Problem
+	// Index into Problem.ColorCoords(). The one we haven't solved yet
+	colorIndex int
+	frontier   []Cell
 }
 
 func NewState(p Problem) *stateImplementation {
-	numCells := p.GridSize() * p.GridSize()
-	cells := make([]Cell, numCells)
-	for i := 0; i < numCells; i++ {
-		cells[i] = NewCell()
+	cells := make([]Cell, 0)
+	for i := 0; i < p.GridSize(); i++ {
+		for j := 0; j < p.GridSize(); j++ {
+			cells = append(cells, NewCell(i, j))
+		}
 	}
 
-	val := 0
-	for i := 0; i < p.NumColors(); i++ {
-		coords, err := p.ColorCoords(i)
+	s := &stateImplementation{
+		cells:      cells,
+		problem:    p,
+		colorIndex: 0,
+	}
+
+	for val := 0; val < p.NumColors(); val++ {
+		cells, err := p.ColorCoords(val)
 		if err != nil {
 			log.Fatal(err)
 		}
-		x1 := coords[0][0]
-		y1 := coords[0][1]
-		x2 := coords[1][0]
-		y2 := coords[1][1]
-		index1 := x1*p.GridSize() + y1
-		err = cells[index1].Fill((val))
-		if err != nil {
-			log.Fatal("Cell was already filled in - there are repeated values in the problem")
+		for _, cell := range cells {
+			coords := cell.Coords()
+			c, cerr := s.GetCell(coords[0], coords[1])
+			if cerr != nil {
+				log.Fatal(cerr)
+			}
+			c.Fill(val)
 		}
-		index2 := x2*p.GridSize() + y2
-		err = cells[index2].Fill((val))
-		if err != nil {
-			log.Fatal("Cell was already filled in - there are repeated values in the problem")
-		}
-		val += 1
 	}
 
-	return &stateImplementation{
-		cells:   cells,
-		problem: p,
-	}
+	return s
 }
 
 func (s *stateImplementation) inbounds(x, y int) bool {
@@ -113,9 +112,20 @@ func (s *stateImplementation) IsSatsifiable() bool {
 }
 
 func (s *stateImplementation) IsSatisfied() bool {
+	// first check that every cell is filled
+	for _, cell := range s.cells {
+		if cell.Empty() {
+			return false
+		}
+	}
+	// next check that each cell on the frontier is at the "end spot"
+	// we don't need to check if each cell is next to an adjacent one
+	// of the same color because we don't make illegal moves (for now)
+	// TODO(tanay)
 	return true
 }
 
+// TODO(tanay) can probably deprecate, because of the serialize function
 func (s *stateImplementation) Equals(b state) bool {
 	if b.Problem().GridSize() != s.Problem().GridSize() ||
 		b.Problem().NumColors() != s.Problem().NumColors() {
@@ -180,7 +190,7 @@ func (s *stateImplementation) String() string {
 			if err != nil {
 				return err.Error()
 			}
-			if cell.Val() != Empty {
+			if !cell.Empty() {
 				colorInd := int(math.Mod(float64(cell.Val()), float64(len(Colors))))
 				reprString += Colors[colorInd](cell.String()) + "|"
 			} else {

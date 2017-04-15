@@ -3,31 +3,53 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 )
 
 type Problem interface {
 	GridSize() int
 	NumColors() int
-	// ColorCoords returns a length two, two-d array
-	// the first array is the "starting coord" for that color
-	// the second is the "ending coord" for that color
-	// pass in the index of the color you want to see (its value)
-	ColorCoords(i int) ([][]int, error)
+	// ColorCoords returns two cells, the "start" cell
+	// and the "end" cell for color i
+	ColorCoords(i int) ([]Cell, error)
 }
 
 type ProblemImplementation struct {
 	gridSize  int
 	numColors int
-	coords    [][]int
+	coordMap  map[int][]Cell
 }
 
 // Instantiate a Problem struct to represent the game board
-
+// Coords is a two-d array where
+// 	Coords[i] =   (x1, y1)
+//  Coords[i+1] = (x2, y2)
+// for i%2 == 0
+// these coordinates are the start, end for color i
 func NewProblem(gridSize, numColors int, coords [][]int) (*ProblemImplementation, error) {
+	coordMap := make(map[int][]Cell, numColors)
+	for i := 0; i < numColors; i++ {
+		x1 := coords[i*2][0]
+		y1 := coords[i*2][1]
+		cell1 := NewCell(x1, y1)
+		err := cell1.Fill(i)
+		if err != nil {
+			log.Fatal(err)
+		}
+		x2 := coords[i*2+1][0]
+		y2 := coords[i*2+1][1]
+		cell2 := NewCell(x2, y2)
+		err = cell2.Fill(i)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		coordMap[i] = []Cell{cell1, cell2}
+	}
 	p := &ProblemImplementation{
 		gridSize:  gridSize,
 		numColors: numColors,
-		coords:    coords,
+		coordMap:  coordMap,
 	}
 	err := p.Validate()
 	if err != nil {
@@ -44,21 +66,18 @@ func (p *ProblemImplementation) NumColors() int {
 	return p.numColors
 }
 
-func (p *ProblemImplementation) ColorCoords(i int) ([][]int, error) {
+func (p *ProblemImplementation) ColorCoords(i int) ([]Cell, error) {
 	if i >= p.numColors || i < 0 {
 		return nil, errors.New(fmt.Sprintf("index i, %d, out of range", i))
 	}
-	coords := make([][]int, 2)
-	coords[0] = p.coords[i*2]
-	coords[1] = p.coords[i*2+1]
-	return coords, nil
+	return p.coordMap[i], nil
 }
 
 // TODO(tanay) fix this based on what is available
 func (p *ProblemImplementation) Validate() error {
-	if len(p.coords)/2 != p.numColors {
+	if len(p.coordMap) != p.numColors {
 		return errors.New(fmt.Sprintf("Number of coordinates, %d, and number of colors, %d, must be equal",
-			len(p.coords)/2, p.numColors))
+			len(p.coordMap), p.numColors))
 	}
 
 	if p.numColors >= int(p.gridSize*p.gridSize/2) {
@@ -71,12 +90,13 @@ func (p *ProblemImplementation) Validate() error {
 	}
 
 	for i := 0; i < p.numColors; i++ {
-		if len(p.coords[i]) != 2 {
+		if len(p.coordMap[i]) != 2 {
 			return errors.New("Every coord should be a 2 length integer array")
 		}
 
-		if outOfBounds(p.coords[i]) {
-			return errors.New(fmt.Sprintf("Coordinates %v are out of bounds", p.coords[i]))
+		if outOfBounds(p.coordMap[i][0].Coords()) ||
+			outOfBounds(p.coordMap[i][1].Coords()) {
+			return errors.New(fmt.Sprintf("Coordinates %v are out of bounds", p.coordMap[i]))
 		}
 	}
 

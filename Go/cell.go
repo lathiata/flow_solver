@@ -13,19 +13,29 @@ const (
 type Cell interface {
 	Fill(val int) error
 	Val() int
+	Empty() bool
 	String() string
+	Coords() []int
 }
 
 type CellImplementation struct {
-	val int
+	val    int
+	coords []int
 }
 
-func NewCell() *CellImplementation {
-	return &CellImplementation{val: Empty}
+func NewCell(x, y int) *CellImplementation {
+	return &CellImplementation{
+		val:    Empty,
+		coords: []int{x, y},
+	}
 }
 
 func (c *CellImplementation) Val() int {
 	return c.val
+}
+
+func (c *CellImplementation) Empty() bool {
+	return c.val == Empty
 }
 
 func (c *CellImplementation) Fill(val int) error {
@@ -41,4 +51,8 @@ func (c *CellImplementation) String() string {
 		return " "
 	}
 	return strconv.Itoa(c.val)
+}
+
+func (c *CellImplementation) Coords() []int {
+	return c.coords
 }
