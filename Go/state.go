@@ -9,6 +9,9 @@ import (
 	"github.com/fatih/color"
 )
 
+// TODO(tanay) reconsider the interface between state
+// and cell. Should state know about x, y coords or just cells?
+
 var (
 	Colors = []func(format string, a ...interface{}) string{
 		color.BlueString,
@@ -108,6 +111,11 @@ func (s *stateImplementation) AdjacentCells(x, y int) ([]Cell, error) {
 }
 
 func (s *stateImplementation) IsSatsifiable() bool {
+	// for each cell, do a DFS (astar?) search
+	// from its current position on the frontier
+	// to the end state. If, the end state is reached for
+	// each cell, return true. If any color is unable to
+	// reach its end cell, return false.
 	return true
 }
 
@@ -122,6 +130,15 @@ func (s *stateImplementation) IsSatisfied() bool {
 	// we don't need to check if each cell is next to an adjacent one
 	// of the same color because we don't make illegal moves (for now)
 	// TODO(tanay)
+	for i, cell := range s.frontier {
+		colorCells, err := s.problem.ColorCoords(i)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if colorCells[1].Coords() != cell.Coords() {
+			return false
+		}
+	}
 	return true
 }
 
