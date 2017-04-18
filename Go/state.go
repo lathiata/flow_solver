@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/fatih/color"
+	"reflect"
 )
 
 // TODO(tanay) reconsider the interface between state
@@ -27,14 +28,13 @@ var (
 // TODO(tanay) document interface methods
 // TODO(tanay) might be able to remove Equals method (thanks to serialize)
 type state interface {
-	GetCell(x, y int) (Cell, error)
-	AdjacentCells(x, y int) ([]Cell, error)
 	IsSatisfied() bool
 	IsSatisfiable() bool
 	Equals(s state) bool
 	Problem() Problem
 	Serialize() string
 	Copy() state
+	NextStates() []state
 }
 
 type stateImplementation struct {
@@ -66,7 +66,7 @@ func NewState(p Problem) *stateImplementation {
 		}
 		for _, cell := range cells {
 			coords := cell.Coords()
-			c, cerr := s.GetCell(coords[0], coords[1])
+			c, cerr := s.getCell(coords[0], coords[1])
 			if cerr != nil {
 				log.Fatal(cerr)
 			}
@@ -84,7 +84,7 @@ func (s *stateImplementation) inbounds(x, y int) bool {
 	return true
 }
 
-func (s *stateImplementation) GetCell(x, y int) (Cell, error) {
+func (s *stateImplementation) getCell(x, y int) (Cell, error) {
 	if !s.inbounds(x, y) {
 		return nil, errors.New("Cell out of bounds")
 	}
@@ -93,7 +93,7 @@ func (s *stateImplementation) GetCell(x, y int) (Cell, error) {
 	return s.cells[index], nil
 }
 
-func (s *stateImplementation) AdjacentCells(x, y int) ([]Cell, error) {
+func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 	adjacentCells := make([]Cell, 0)
 	if !s.inbounds(x, y) {
 		return nil, errors.New("Cell out of bounds")
@@ -101,7 +101,7 @@ func (s *stateImplementation) AdjacentCells(x, y int) ([]Cell, error) {
 
 	for i := x - 1; i <= x+1; i++ {
 		for j := y - 1; j <= y+1; j++ {
-			cell, err := s.GetCell(i, j)
+			cell, err := s.getCell(i, j)
 			if err != nil && !(x == i && y == j) {
 				adjacentCells = append(adjacentCells, cell)
 			}
@@ -135,7 +135,7 @@ func (s *stateImplementation) IsSatisfied() bool {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if colorCells[1].Coords() != cell.Coords() {
+		if !reflect.DeepEqual(colorCells[1].Coords(), cell.Coords()) {
 			return false
 		}
 	}
@@ -143,7 +143,7 @@ func (s *stateImplementation) IsSatisfied() bool {
 }
 
 // TODO(tanay) can probably deprecate, because of the serialize function
-func (s *stateImplementation) Equals(b state) bool {
+func (s *stateImplementation) Equals(b *stateImplementation) bool {
 	if b.Problem().GridSize() != s.Problem().GridSize() ||
 		b.Problem().NumColors() != s.Problem().NumColors() {
 		return false
@@ -151,9 +151,9 @@ func (s *stateImplementation) Equals(b state) bool {
 
 	for x := 0; x < b.Problem().GridSize(); x++ {
 		for y := 0; y < b.Problem().GridSize(); y++ {
-			cell1, err := b.GetCell(x, y)
+			cell1, err := b.getCell(x, y)
 			log.Fatal(err)
-			cell2, err := s.GetCell(x, y)
+			cell2, err := s.getCell(x, y)
 			log.Fatal(err)
 			if cell1.Val() != cell2.Val() {
 				return false
@@ -172,7 +172,7 @@ func (s *stateImplementation) Serialize() string {
 	serializedState := ""
 	for x := 0; x < s.Problem().GridSize(); x++ {
 		for y := 0; y < s.Problem().GridSize(); y++ {
-			cell, err := s.GetCell(x, y)
+			cell, err := s.getCell(x, y)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -203,7 +203,7 @@ func (s *stateImplementation) String() string {
 		// row headers
 		reprString += strconv.Itoa(i) + "|"
 		for j := 0; j < s.Problem().GridSize(); j++ {
-			cell, err := s.GetCell(i, j)
+			cell, err := s.getCell(i, j)
 			if err != nil {
 				return err.Error()
 			}
@@ -217,4 +217,8 @@ func (s *stateImplementation) String() string {
 		reprString += "\n"
 	}
 	return reprString
+}
+
+func (s *stateImplementation) NextStates() []*stateImplementation {
+	return nil
 }
