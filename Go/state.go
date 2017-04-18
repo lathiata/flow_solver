@@ -10,9 +10,6 @@ import (
 	"reflect"
 )
 
-// TODO(tanay) reconsider the interface between state
-// and cell. Should state know about x, y coords or just cells?
-
 var (
 	Colors = []func(format string, a ...interface{}) string{
 		color.BlueString,
@@ -25,8 +22,11 @@ var (
 	}
 )
 
-// TODO(tanay) document interface methods
 // TODO(tanay) might be able to remove Equals method (thanks to serialize)
+// The state interface actually wraps two things:
+// 1) How you want to store internals (which cells are filled, etc
+// 2) Transition model (NextStates)
+// The methods defined are useful for implementing the pruned, threaded BFS
 type state interface {
 	IsSatisfied() bool
 	IsSatisfiable() bool
@@ -52,11 +52,12 @@ func NewState(p Problem) *stateImplementation {
 			cells = append(cells, NewCell(i, j))
 		}
 	}
-
+	frontier := make([]Cell, p.NumColors())
 	s := &stateImplementation{
 		cells:      cells,
 		problem:    p,
 		colorIndex: 0,
+		frontier:   frontier,
 	}
 
 	for val := 0; val < p.NumColors(); val++ {
@@ -64,13 +65,17 @@ func NewState(p Problem) *stateImplementation {
 		if err != nil {
 			log.Fatal(err)
 		}
-		for _, cell := range cells {
+		for i, cell := range cells {
 			coords := cell.Coords()
 			c, cerr := s.getCell(coords[0], coords[1])
 			if cerr != nil {
 				log.Fatal(cerr)
 			}
 			c.Fill(val)
+			if i == 0 {
+				// "start cell"
+				s.frontier[i] = cell
+			}
 		}
 	}
 
@@ -93,6 +98,7 @@ func (s *stateImplementation) getCell(x, y int) (Cell, error) {
 	return s.cells[index], nil
 }
 
+// Get a list of cells that are empty and next to the input cell
 func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 	adjacentCells := make([]Cell, 0)
 	if !s.inbounds(x, y) {
@@ -102,7 +108,7 @@ func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 	for i := x - 1; i <= x+1; i++ {
 		for j := y - 1; j <= y+1; j++ {
 			cell, err := s.getCell(i, j)
-			if err != nil && !(x == i && y == j) {
+			if err != nil && !(x == i && y == j) && cell.Empty() {
 				adjacentCells = append(adjacentCells, cell)
 			}
 		}
@@ -110,6 +116,7 @@ func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 	return adjacentCells, nil
 }
 
+// TODO(tanaylathia)
 func (s *stateImplementation) IsSatsifiable() bool {
 	// for each cell, do a DFS (astar?) search
 	// from its current position on the frontier
@@ -129,7 +136,6 @@ func (s *stateImplementation) IsSatisfied() bool {
 	// next check that each cell on the frontier is at the "end spot"
 	// we don't need to check if each cell is next to an adjacent one
 	// of the same color because we don't make illegal moves (for now)
-	// TODO(tanay)
 	for i, cell := range s.frontier {
 		colorCells, err := s.problem.ColorCoords(i)
 		if err != nil {
@@ -219,6 +225,59 @@ func (s *stateImplementation) String() string {
 	return reprString
 }
 
+// The transition model this implements will "solve" one color
+// at a time (explores every legal move until finds "end" cell)
+//
+// TODO(tanaylathia) need to initialize frontier/colorIndex in NewState - increment color index for already solved colors
 func (s *stateImplementation) NextStates() []*stateImplementation {
-	return nil
+	// First get the "frontier" cell and the
+	// end cell for the corresponding color
+	frontierCell := s.frontier[s.colorIndex]
+	frontiercellCoords := frontierCell.Coords()
+	colorCells, err := s.problem.ColorCoords(s.colorIndex)
+	if err != nil {
+		log.Fatal(err)
+	}
+	endCellCoords := colorCells[1].Coords()
+	adjacentCells, err := s.adjacentCells(endCellCoords[0], endCellCoords[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Now check if the frontier cell and the end cell are adjacent
+	// if they are, update the colorIndex and the frontier
+	for _, cell := range adjacentCells {
+		if reflect.DeepEqual(cell.Coords(), frontiercellCoords) {
+			if s.colorIndex == s.Problem().NumColors()-1 {
+				return nil //Solved problem
+			} else {
+				s.colorIndex += 1
+				frontierCell = s.frontier[s.colorIndex]
+				frontiercellCoords = frontierCell.Coords()
+			}
+			break
+		}
+	}
+
+	// Based on the correct frontierCell (if above protocol is correct)
+	// we go through all possible moves and create next states for them
+	possibleMoves, err := s.adjacentCells(frontiercellCoords[0], frontiercellCoords[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+	nextStates := make([]*stateImplementation, len(possibleMoves))
+	for i, move := range possibleMoves {
+		nextState := s.Copy()
+		moveCoords := move.Coords()
+		cell, merr := nextState.getCell(moveCoords[0], moveCoords[1])
+		if merr != nil {
+			log.Fatal(err)
+		}
+		// Update info in nextState
+		cell.Fill(s.colorIndex)
+		nextState.frontier[i] = cell
+		nextStates[i] = nextState
+	}
+
+	return nextStates
 }
