@@ -120,7 +120,7 @@ func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			if !(x == i && y == j) && cell.Empty() {
+			if !reflect.DeepEqual(coords, []int{x, y}) && cell.Empty() {
 				adjacentCells = append(adjacentCells, cell)
 			}
 
@@ -203,23 +203,31 @@ func (s *stateImplementation) Serialize() string {
 
 //TODO(tanay)
 func (s *stateImplementation) Copy() *stateImplementation {
-	copyCells := func(src []Cell) []Cell {
-		copy := make([]Cell, len(src))
-		for i, cell := range src {
-			coords := cell.Coords()
-			copy[i] = NewCell(coords[0], coords[1])
-			copy[i].Fill(cell.Val())
-		}
-		return copy
+	cellCopy := make([]Cell, len(s.cells))
+	for i, cell := range s.cells {
+		coords := cell.Coords()
+		cellCopy[i] = NewCell(coords[0], coords[1])
+		cellCopy[i].Fill(cell.Val())
 	}
-	cellCopy := copyCells(s.cells)
-	frontierCopy := copyCells(s.frontier)
-	return &stateImplementation{
+
+	copy := &stateImplementation{
 		cells:      cellCopy,
 		problem:    s.Problem(),
 		colorIndex: s.colorIndex,
-		frontier:   frontierCopy,
 	}
+
+	frontierCopy := make([]Cell, len(s.frontier))
+	for i, cell := range s.frontier {
+		coords := cell.Coords()
+		copyCell, err := s.getCell(coords[0], coords[1])
+		if err != nil {
+			log.Fatal(err)
+		}
+		frontierCopy[i] = copyCell
+	}
+
+	copy.frontier = frontierCopy
+	return copy
 }
 
 func (s *stateImplementation) String() string {
@@ -262,7 +270,8 @@ func (s *stateImplementation) NextStates() []*stateImplementation {
 	// First get the "frontier" cell and the
 	// end cell for the corresponding color
 	frontierCell := s.frontier[s.colorIndex]
-	frontiercellCoords := frontierCell.Coords()
+	frontierCellCoords := frontierCell.Coords()
+	log.Printf("frontier cell coords: %v", frontierCellCoords)
 	colorCells, err := s.problem.ColorCoords(s.colorIndex)
 	if err != nil {
 		log.Fatal(err)
@@ -276,13 +285,13 @@ func (s *stateImplementation) NextStates() []*stateImplementation {
 	// Now check if the frontier cell and the end cell are adjacent
 	// if they are, update the colorIndex and the frontier
 	for _, cell := range adjacentCells {
-		if reflect.DeepEqual(cell.Coords(), frontiercellCoords) {
+		if reflect.DeepEqual(cell.Coords(), frontierCellCoords) {
 			if s.colorIndex == s.Problem().NumColors()-1 {
 				return nil //Solved problem
 			} else {
 				s.colorIndex += 1
 				frontierCell = s.frontier[s.colorIndex]
-				frontiercellCoords = frontierCell.Coords()
+				frontierCellCoords = frontierCell.Coords()
 			}
 			break
 		}
@@ -290,7 +299,8 @@ func (s *stateImplementation) NextStates() []*stateImplementation {
 
 	// Based on the correct frontierCell (if above protocol is correct)
 	// we go through all possible moves and create next states for them
-	possibleMoves, err := s.adjacentCells(frontiercellCoords[0], frontiercellCoords[1])
+	possibleMoves, err := s.adjacentCells(frontierCellCoords[0], frontierCellCoords[1])
+	log.Printf("%d possible moves", len(possibleMoves))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -298,6 +308,7 @@ func (s *stateImplementation) NextStates() []*stateImplementation {
 	for i, move := range possibleMoves {
 		nextState := s.Copy()
 		moveCoords := move.Coords()
+		log.Printf("move coords: %v", moveCoords)
 		cell, merr := nextState.getCell(moveCoords[0], moveCoords[1])
 		if merr != nil {
 			log.Fatal(err)
@@ -305,6 +316,7 @@ func (s *stateImplementation) NextStates() []*stateImplementation {
 		// Update info in nextState
 		cell.Fill(s.colorIndex)
 		nextState.frontier[i] = cell
+		log.Printf("Double check that move->frontier: %v", cell.Coords())
 		nextStates[i] = nextState
 	}
 
