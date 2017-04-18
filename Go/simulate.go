@@ -31,7 +31,8 @@ func main() {
 	s := NewState(p)
 	log.Printf("Starting flow game simulation with board: %s", s)
 	nextStates := s.NextStates()
-	log.Printf("Next Level States: %s", nextStates)
-	log.Printf("Two levels deep: %s", nextStates[0].NextStates())
-	log.Printf("Also two levels deep: %s", nextStates[1].NextStates())
+	log.Printf("One level nextstates %v", nextStates)
+	for _, ns := range nextStates {
+		log.Printf("Two level next states: %v", ns.NextStates())
+	}
 }

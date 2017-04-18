@@ -271,7 +271,6 @@ func (s *stateImplementation) NextStates() []*stateImplementation {
 	// end cell for the corresponding color
 	frontierCell := s.frontier[s.colorIndex]
 	frontierCellCoords := frontierCell.Coords()
-	log.Printf("frontier cell coords: %v", frontierCellCoords)
 	colorCells, err := s.problem.ColorCoords(s.colorIndex)
 	if err != nil {
 		log.Fatal(err)
@@ -300,7 +299,6 @@ func (s *stateImplementation) NextStates() []*stateImplementation {
 	// Based on the correct frontierCell (if above protocol is correct)
 	// we go through all possible moves and create next states for them
 	possibleMoves, err := s.adjacentCells(frontierCellCoords[0], frontierCellCoords[1])
-	log.Printf("%d possible moves", len(possibleMoves))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -308,15 +306,13 @@ func (s *stateImplementation) NextStates() []*stateImplementation {
 	for i, move := range possibleMoves {
 		nextState := s.Copy()
 		moveCoords := move.Coords()
-		log.Printf("move coords: %v", moveCoords)
 		cell, merr := nextState.getCell(moveCoords[0], moveCoords[1])
 		if merr != nil {
 			log.Fatal(err)
 		}
 		// Update info in nextState
 		cell.Fill(s.colorIndex)
-		nextState.frontier[i] = cell
-		log.Printf("Double check that move->frontier: %v", cell.Coords())
+		nextState.frontier[s.colorIndex] = cell
 		nextStates[i] = nextState
 	}
 
