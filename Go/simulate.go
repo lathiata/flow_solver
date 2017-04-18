@@ -28,6 +28,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	b := NewState(p)
-	log.Printf("Starting flow game simulation with board:\n %s", b.String())
+	s := NewState(p)
+	log.Printf("Starting flow game simulation with board: %s", s)
+	log.Printf("Next states: %s", s.NextStates())
 }

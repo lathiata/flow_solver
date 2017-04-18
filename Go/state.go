@@ -74,7 +74,7 @@ func NewState(p Problem) *stateImplementation {
 			c.Fill(val)
 			if i == 0 {
 				// "start cell"
-				s.frontier[i] = cell
+				s.frontier[val] = c
 			}
 		}
 	}
@@ -105,12 +105,25 @@ func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 		return nil, errors.New("Cell out of bounds")
 	}
 
-	for i := x - 1; i <= x+1; i++ {
-		for j := y - 1; j <= y+1; j++ {
+	possibleCoords := [][]int{
+		[]int{x, y + 1},
+		[]int{x, y - 1},
+		[]int{x + 1, y},
+		[]int{x - 1, y},
+	}
+
+	for _, coords := range possibleCoords {
+		i := coords[0]
+		j := coords[1]
+		if s.inbounds(i, j) {
 			cell, err := s.getCell(i, j)
-			if err != nil && !(x == i && y == j) && cell.Empty() {
+			if err != nil {
+				log.Fatal(err)
+			}
+			if !(x == i && y == j) && cell.Empty() {
 				adjacentCells = append(adjacentCells, cell)
 			}
+
 		}
 	}
 	return adjacentCells, nil
@@ -190,11 +203,27 @@ func (s *stateImplementation) Serialize() string {
 
 //TODO(tanay)
 func (s *stateImplementation) Copy() *stateImplementation {
-	return nil
+	copyCells := func(src []Cell) []Cell {
+		copy := make([]Cell, len(src))
+		for i, cell := range src {
+			coords := cell.Coords()
+			copy[i] = NewCell(coords[0], coords[1])
+			copy[i].Fill(cell.Val())
+		}
+		return copy
+	}
+	cellCopy := copyCells(s.cells)
+	frontierCopy := copyCells(s.frontier)
+	return &stateImplementation{
+		cells:      cellCopy,
+		problem:    s.Problem(),
+		colorIndex: s.colorIndex,
+		frontier:   frontierCopy,
+	}
 }
 
 func (s *stateImplementation) String() string {
-	reprString := "  "
+	reprString := "\n  "
 	// column headers
 	for i := 0; i < s.Problem().GridSize(); i++ {
 		reprString += strconv.Itoa(i)
