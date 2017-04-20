@@ -2,7 +2,6 @@ package main
 
 import (
 	"container/heap"
-	"log"
 	"sync"
 )
 
@@ -80,7 +79,7 @@ func (c *coordinator) helper(id int) {
 		// do work
 		// check if states are solvable/solved here
 		// if not solveable remove from nextStates
-		log.Printf("Thread %d working on: %s", id, s)
+		//log.Printf("Thread %d working on: %s", id, s)
 		isSolved := false
 		var solvedState state
 		nextStates := s.NextStates()

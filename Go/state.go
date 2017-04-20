@@ -141,12 +141,14 @@ func (s *stateImplementation) IsSatisfiable() bool {
 }
 
 func (s *stateImplementation) IsSatisfied() bool {
-	// this is all we need to check because we only make legal moves
+	// first check all cells filled
 	for _, cell := range s.cells {
 		if cell.Empty() {
 			return false
 		}
 	}
+
+	// TODO(tanay) now check all cells on frontier are adjacent to end cell for that color
 	return true
 }
 
