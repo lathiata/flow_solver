@@ -162,15 +162,15 @@ func (s *stateImplementation) IsSatisfied() bool {
 	return true
 }
 
-// TODO(tanay)
-func (s *stateImplementation) Heuristic() int {
-	distance := func(c1, c2 Cell) int {
+func distance(c1, c2 Cell) int {
 		coords1 := c1.Coords()
 		coords2 := c2.Coords()
 		return int(math.Sqrt(math.Pow(float64(coords1[0]-coords2[0]), 2.0) +
 			math.Pow(float64(coords1[1]-coords2[1]), 2.0)))
-	}
+}
 
+
+func (s *stateImplementation) Heuristic() int {
 	totalDistance := 0
 	for i, frontierCell := range s.frontier {
 		cells, err := s.Problem().ColorCoords(i)
@@ -261,6 +261,11 @@ func (s *stateImplementation) String() string {
 	return reprString
 }
 
+func (s *stateImplementation) areCellsAdjacent(c1, c2 Cell) bool {
+	return distance(c1, c2) == 1
+}
+
+
 // The transition model this implements will "solve" one color
 // at a time (explores every legal move until finds "end" cell)
 //
@@ -271,28 +276,19 @@ func (s *stateImplementation) NextStates() []state {
 	frontierCell := s.frontier[s.colorIndex]
 	frontierCellCoords := frontierCell.Coords()
 	colorCells, err := s.problem.ColorCoords(s.colorIndex)
+	endCell := colorCells[1]
 	if err != nil {
 		log.Fatal(err)
 	}
-	endCellCoords := colorCells[1].Coords()
-	adjacentCells, err := s.adjacentCells(endCellCoords[0], endCellCoords[1])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Now check if the frontier cell and the end cell are adjacent
-	// if they are, update the colorIndex and the frontier
-	for _, cell := range adjacentCells {
-		if reflect.DeepEqual(cell.Coords(), frontierCellCoords) {
-			if s.colorIndex == s.Problem().NumColors()-1 {
-				return nil //Solved problem
-			} else {
-				s.colorIndex += 1
-				frontierCell = s.frontier[s.colorIndex]
-				frontierCellCoords = frontierCell.Coords()
-			}
-			break
+	if s.areCellsAdjacent(frontierCell, endCell) {
+		s.colorIndex += 1
+		if s.colorIndex == s.Problem().NumColors()-1 {
+			//COLORS ARE SOLVED
+			return nil
 		}
+		frontierCell = s.frontier[s.colorIndex]
+		frontierCellCoords = frontierCell.Coords()
+
 	}
 
 	// Based on the correct frontierCell (if above protocol is correct)
