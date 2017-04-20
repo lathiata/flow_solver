@@ -42,7 +42,7 @@ func NewCoordinator(initialState state) *coordinator {
 func (c *coordinator) Solve() state {
 	for i := 0; i < c.numThreads; i++ {
 		c.waitGroup.Add(1)
-		go c.helper()
+		go c.helper(i)
 	}
 
 	c.waitGroup.Wait()
@@ -54,7 +54,7 @@ func (c *coordinator) Solve() state {
 // TODO(tanay) behavior when you have a non-solvable game board
 // if there is nothing in the frontier. Then, wake the thread up
 // once something is placed back onto the frontier
-func (c *coordinator) helper() {
+func (c *coordinator) helper(id int) {
 	for !c.isSolved {
 		var s state
 
@@ -80,7 +80,7 @@ func (c *coordinator) helper() {
 		// do work
 		// check if states are solvable/solved here
 		// if not solveable remove from nextStates
-		log.Print(s)
+		log.Printf("Thread %d working on: %s", id, s)
 		isSolved := false
 		var solvedState state
 		nextStates := s.NextStates()
