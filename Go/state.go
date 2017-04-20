@@ -141,32 +141,20 @@ func (s *stateImplementation) IsSatisfiable() bool {
 }
 
 func (s *stateImplementation) IsSatisfied() bool {
-	// first check that every cell is filled
+	// this is all we need to check because we only make legal moves
 	for _, cell := range s.cells {
 		if cell.Empty() {
-			return false
-		}
-	}
-	// next check that each cell on the frontier is at the "end spot"
-	// we don't need to check if each cell is next to an adjacent one
-	// of the same color because we don't make illegal moves (for now)
-	for i, cell := range s.frontier {
-		colorCells, err := s.problem.ColorCoords(i)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if !reflect.DeepEqual(colorCells[1].Coords(), cell.Coords()) {
 			return false
 		}
 	}
 	return true
 }
 
-func distance(c1, c2 Cell) int {
+func distance(c1, c2 Cell) float64 {
 	coords1 := c1.Coords()
 	coords2 := c2.Coords()
-	return int(math.Sqrt(math.Pow(float64(coords1[0]-coords2[0]), 2.0) +
-		math.Pow(float64(coords1[1]-coords2[1]), 2.0)))
+	return math.Sqrt(math.Pow(float64(coords1[0]-coords2[0]), 2.0) +
+		math.Pow(float64(coords1[1]-coords2[1]), 2.0))
 }
 
 func (s *stateImplementation) Heuristic() int {
@@ -176,7 +164,7 @@ func (s *stateImplementation) Heuristic() int {
 		if err != nil {
 			log.Fatal(err)
 		}
-		totalDistance += distance(frontierCell, cells[1])
+		totalDistance += int(distance(frontierCell, cells[1]))
 	}
 
 	return totalDistance
@@ -261,7 +249,7 @@ func (s *stateImplementation) String() string {
 }
 
 func (s *stateImplementation) areCellsAdjacent(c1, c2 Cell) bool {
-	return distance(c1, c2) == 1
+	return distance(c1, c2) == 1.0
 }
 
 // The transition model this implements will "solve" one color
@@ -280,10 +268,6 @@ func (s *stateImplementation) NextStates() []state {
 	}
 	if s.areCellsAdjacent(frontierCell, endCell) {
 		s.colorIndex += 1
-		if s.colorIndex == s.Problem().NumColors()-1 {
-			//COLORS ARE SOLVED
-			return nil
-		}
 		frontierCell = s.frontier[s.colorIndex]
 		frontierCellCoords = frontierCell.Coords()
 
