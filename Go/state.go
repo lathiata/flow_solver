@@ -163,12 +163,11 @@ func (s *stateImplementation) IsSatisfied() bool {
 }
 
 func distance(c1, c2 Cell) int {
-		coords1 := c1.Coords()
-		coords2 := c2.Coords()
-		return int(math.Sqrt(math.Pow(float64(coords1[0]-coords2[0]), 2.0) +
-			math.Pow(float64(coords1[1]-coords2[1]), 2.0)))
+	coords1 := c1.Coords()
+	coords2 := c2.Coords()
+	return int(math.Sqrt(math.Pow(float64(coords1[0]-coords2[0]), 2.0) +
+		math.Pow(float64(coords1[1]-coords2[1]), 2.0)))
 }
-
 
 func (s *stateImplementation) Heuristic() int {
 	totalDistance := 0
@@ -264,7 +263,6 @@ func (s *stateImplementation) String() string {
 func (s *stateImplementation) areCellsAdjacent(c1, c2 Cell) bool {
 	return distance(c1, c2) == 1
 }
-
 
 // The transition model this implements will "solve" one color
 // at a time (explores every legal move until finds "end" cell)
