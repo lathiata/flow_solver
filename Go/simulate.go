@@ -29,10 +29,7 @@ func main() {
 		log.Fatal(err)
 	}
 	s := NewState(p)
-	log.Printf("Starting flow game simulation with board: %s", s)
-	nextStates := s.NextStates()
-	log.Printf("One level nextstates %v", nextStates)
-	for _, ns := range nextStates {
-		log.Printf("Two level next states: %v", ns.NextStates())
-	}
+	coordinator := NewCoordinator(s)
+	solution := coordinator.Solve()
+	log.Printf("Solution: %s", solution)
 }

@@ -22,6 +22,7 @@ var (
 	}
 )
 
+// TODO(tanay) implement a hueristic method (should be in interface probably)
 // TODO(tanay) might be able to remove Equals method (thanks to serialize)
 // The state interface actually wraps two things:
 // 1) How you want to store internals (which cells are filled, etc
@@ -30,11 +31,11 @@ var (
 type state interface {
 	IsSatisfied() bool
 	IsSatisfiable() bool
-	Equals(s state) bool
 	Problem() Problem
 	Serialize() string
 	Copy() state
 	NextStates() []state
+	Heuristic() int
 }
 
 type stateImplementation struct {
@@ -130,7 +131,7 @@ func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 }
 
 // TODO(tanaylathia)
-func (s *stateImplementation) IsSatsifiable() bool {
+func (s *stateImplementation) IsSatisfiable() bool {
 	// for each cell, do a DFS (astar?) search
 	// from its current position on the frontier
 	// to the end state. If, the end state is reached for
@@ -161,26 +162,25 @@ func (s *stateImplementation) IsSatisfied() bool {
 	return true
 }
 
-// TODO(tanay) can probably deprecate, because of the serialize function
-func (s *stateImplementation) Equals(b *stateImplementation) bool {
-	if b.Problem().GridSize() != s.Problem().GridSize() ||
-		b.Problem().NumColors() != s.Problem().NumColors() {
-		return false
+// TODO(tanay)
+func (s *stateImplementation) Heuristic() int {
+	distance := func(c1, c2 Cell) int {
+		coords1 := c1.Coords()
+		coords2 := c2.Coords()
+		return int(math.Sqrt(math.Pow(float64(coords1[0]-coords2[0]), 2.0) +
+			math.Pow(float64(coords1[1]-coords2[1]), 2.0)))
 	}
 
-	for x := 0; x < b.Problem().GridSize(); x++ {
-		for y := 0; y < b.Problem().GridSize(); y++ {
-			cell1, err := b.getCell(x, y)
+	totalDistance := 0
+	for i, frontierCell := range s.frontier {
+		cells, err := s.Problem().ColorCoords(i)
+		if err != nil {
 			log.Fatal(err)
-			cell2, err := s.getCell(x, y)
-			log.Fatal(err)
-			if cell1.Val() != cell2.Val() {
-				return false
-			}
 		}
+		totalDistance += distance(frontierCell, cells[1])
 	}
 
-	return true
+	return totalDistance
 }
 
 func (s *stateImplementation) Problem() Problem {
@@ -201,8 +201,7 @@ func (s *stateImplementation) Serialize() string {
 	return serializedState
 }
 
-//TODO(tanay)
-func (s *stateImplementation) Copy() *stateImplementation {
+func (s *stateImplementation) Copy() state {
 	cellCopy := make([]Cell, len(s.cells))
 	for i, cell := range s.cells {
 		coords := cell.Coords()
@@ -266,7 +265,7 @@ func (s *stateImplementation) String() string {
 // at a time (explores every legal move until finds "end" cell)
 //
 // TODO(tanaylathia) need to initialize frontier/colorIndex in NewState - increment color index for already solved colors
-func (s *stateImplementation) NextStates() []*stateImplementation {
+func (s *stateImplementation) NextStates() []state {
 	// First get the "frontier" cell and the
 	// end cell for the corresponding color
 	frontierCell := s.frontier[s.colorIndex]
@@ -302,18 +301,19 @@ func (s *stateImplementation) NextStates() []*stateImplementation {
 	if err != nil {
 		log.Fatal(err)
 	}
-	nextStates := make([]*stateImplementation, len(possibleMoves))
+	nextStates := make([]state, len(possibleMoves))
 	for i, move := range possibleMoves {
 		nextState := s.Copy()
+		castedNextState := nextState.(*stateImplementation)
 		moveCoords := move.Coords()
-		cell, merr := nextState.getCell(moveCoords[0], moveCoords[1])
+		cell, merr := castedNextState.getCell(moveCoords[0], moveCoords[1])
 		if merr != nil {
 			log.Fatal(err)
 		}
 		// Update info in nextState
 		cell.Fill(s.colorIndex)
-		nextState.frontier[s.colorIndex] = cell
-		nextStates[i] = nextState
+		castedNextState.frontier[s.colorIndex] = cell
+		nextStates[i] = castedNextState
 	}
 
 	return nextStates
