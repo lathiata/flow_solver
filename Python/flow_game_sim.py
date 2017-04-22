@@ -1,5 +1,6 @@
 import argparse
 from random import choice
+import time
 
 from flow_game_problem import FlowGameProblem
 from flow_search import flow_game_search
@@ -28,8 +29,12 @@ SEARCH_MODEL_NAMES = {TransitionModels.VERSION_0: "multi",
 
 def run_simulation(model, problem, verbose):
     print("Solving problem using the {0} transition model".format(SEARCH_MODEL_NAMES[model]))
+    start = time.time()
     print(problem.get_start_state())
     print(flow_game_search(problem, model, verbose))
+    end = time.time()
+    print(end - start)
+
 
 
 def validate_args(args):
