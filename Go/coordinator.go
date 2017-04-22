@@ -13,7 +13,6 @@ type coordinator struct {
 	frontier   PriorityQueue
 	lock       sync.Locker
 	waitGroup  *sync.WaitGroup
-	//cond            *sync.Cond
 }
 
 // TODO(tanay) should this check if initialState is solved?
@@ -25,13 +24,12 @@ func NewCoordinator(initialState state) *coordinator {
 	})
 	heap.Init(&frontier)
 	return &coordinator{
-		isSolved:  false,
-		explored:  make([]string, 0),
-		frontier:  frontier,
-		lock:      &sync.Mutex{},
-		waitGroup: &sync.WaitGroup{},
-		//cond:            sync.NewCond(&sync.Mutex{}),
-		numThreads: 10, //TODO(tanay) this could be configurable
+		isSolved:   false,
+		explored:   make([]string, 0),
+		frontier:   frontier,
+		lock:       &sync.Mutex{},
+		waitGroup:  &sync.WaitGroup{},
+		numThreads: 1, //TODO(tanay) this could be configurable
 	}
 }
 
@@ -67,19 +65,13 @@ func (c *coordinator) helper(id int) {
 		}
 		c.lock.Unlock()
 
-		//check if s is nil, if it is, we should sleep this thread
-		//TODO(tanay) not sure if this will cause deadlock/is inappopriate usage
 		if s == nil {
-			//c.cond.L.Lock()
-			//c.cond.Wait()
-			//c.cond.L.Unlock()
 			continue
 		}
 
 		// do work
 		// check if states are solvable/solved here
 		// if not solveable remove from nextStates
-		//log.Printf("Thread %d working on: %s", id, s)
 		isSolved := false
 		var solvedState state
 		nextStates := s.NextStates()
@@ -112,7 +104,6 @@ func (c *coordinator) helper(id int) {
 				}
 				if unique {
 					heap.Push(&c.frontier, &StateWrapper{State: ns})
-					//c.cond.Signal()
 				}
 			}
 		}

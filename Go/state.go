@@ -23,7 +23,6 @@ var (
 )
 
 // TODO(tanay) implement a hueristic method (should be in interface probably)
-// TODO(tanay) might be able to remove Equals method (thanks to serialize)
 // The state interface actually wraps two things:
 // 1) How you want to store internals (which cells are filled, etc
 // 2) Transition model (NextStates)
@@ -39,9 +38,8 @@ type state interface {
 }
 
 type stateImplementation struct {
-	cells   []Cell
-	problem Problem
-	// Index into Problem.ColorCoords(). The one we haven't solved yet
+	cells      []Cell
+	problem    Problem
 	colorIndex int
 	frontier   []Cell
 }
@@ -144,13 +142,73 @@ func (s *stateImplementation) adjacentEmptyCells(x, y int) ([]Cell, error) {
 	return filteredCells, nil
 }
 
-// TODO(tanaylathia)
+// returns true if one of the adjacent cells is the same color
+func (s *stateImplementation) hasAdjacentCell(c Cell) bool {
+	adjacentCells, err := s.adjacentCells(c.Coords()[0], c.Coords()[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, cell := range adjacentCells {
+		if cell.Val() == c.Val() {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *stateImplementation) IsSatisfiable() bool {
-	// for each cell, do a DFS (astar?) search
-	// from its current position on the frontier
-	// to the end state. If, the end state is reached for
-	// each cell, return true. If any color is unable to
-	// reach its end cell, return false.
+	// for each non-satisfied color [s.colorIndex, s.Problem().NumColors())
+	// Make all the possible legal moves until there are no legal moves left
+	// or that color is satisfied.
+	for i := s.colorIndex; i < s.Problem().NumColors(); i++ {
+		stateCopy := s.Copy().(*stateImplementation)
+		colorCells, err := stateCopy.Problem().ColorCoords(i)
+		endCell := colorCells[1]
+		if err != nil {
+			log.Fatal(err)
+		}
+		currCellCoords := stateCopy.frontier[i].Coords()
+		queue, err := stateCopy.adjacentEmptyCells(currCellCoords[0], currCellCoords[1])
+		// TODO(tanay): corner case where color is already "solved"
+		if err != nil {
+			log.Fatal(err)
+		}
+		solvedColor := false
+
+		// Make all legal moves possible from current position
+		for true {
+			if stateCopy.hasAdjacentCell(endCell) {
+				solvedColor = true
+				break
+			}
+			if len(queue) == 0 {
+				break
+			}
+			// Pop first item off queue
+			move := queue[0]
+			queue = queue[1:]
+
+			//perform move
+			moveCoords := move.Coords()
+			cell, merr := stateCopy.getCell(moveCoords[0], moveCoords[1])
+			if merr != nil {
+				log.Fatal(merr)
+			}
+			cell.Fill(i)
+			// add next cells to queue
+			nextCells, err := stateCopy.adjacentEmptyCells(moveCoords[0], moveCoords[1])
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, c := range nextCells {
+				queue = append(queue, c)
+			}
+		}
+
+		if !solvedColor {
+			return false
+		}
+	}
 	return true
 }
 
@@ -306,7 +364,7 @@ func (s *stateImplementation) NextStates() []state {
 		moveCoords := move.Coords()
 		cell, merr := castedNextState.getCell(moveCoords[0], moveCoords[1])
 		if merr != nil {
-			log.Fatal(err)
+			log.Fatal(merr)
 		}
 		// Update info in nextState
 		cell.Fill(s.colorIndex)

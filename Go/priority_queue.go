@@ -1,12 +1,12 @@
 package main
 
 // This is taken from https://golang.org/pkg/container/heap/#Fix
+// Once the interface is completed (Len, Less, Swap, Push, Pop), we can use
+// container/heap methods
 
-// An Item is something we manage in a priority queue.
 type StateWrapper struct {
 	State state
-	// The index is needed by update and is maintained by the heap.Interface methods.
-	index int // The index of the item in the heap.
+	index int
 }
 
 // A PriorityQueue implements heap.Interface and holds Items.
