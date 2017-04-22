@@ -9,10 +9,17 @@ import (
 
 // This file instantiates game boards based on command line
 // inputs and runs the indicated algorithm to solve it
+func simulate(s state) {
+	log.Printf("Start state: %s", s)
+	startTime := time.Now()
+	coordinator := NewCoordinator(s)
+	solution := coordinator.Solve()
+	elapsedTime := time.Since(startTime)
+	log.Printf("Solution: %s in %f sec", solution, float64(elapsedTime)/float64(1000000000))
 
+}
 func main() {
 	//easy
-	startEasy := time.Now()
 	coords := [][]int{
 		[]int{0, 2},
 		[]int{3, 0},
@@ -32,14 +39,8 @@ func main() {
 		log.Fatal(err)
 	}
 	s := NewState(p)
-	log.Printf("Start state: %s", s)
-	coordinator := NewCoordinator(s)
-	solution := coordinator.Solve()
-	easyTime := time.Since(startEasy)
-	log.Printf("Solution: %s in %f sec", solution, float64(easyTime)/float64(1000000000))
-
+	simulate(s)
 	//medium
-	startMedium := time.Now()
 	coords = [][]int{
 		[]int{0, 0},
 		[]int{3, 0},
@@ -67,12 +68,7 @@ func main() {
 		log.Fatal(err)
 	}
 	s = NewState(p)
-	log.Printf("Start state: %s", s)
-	coordinator = NewCoordinator(s)
-	solution = coordinator.Solve()
-	mediumTime := time.Since(startMedium)
-	log.Printf("Solution: %s in %f sec", solution, float64(mediumTime)/float64(1000000000))
-
+	simulate(s)
 	//hard
 	//coords = [][]int{
 	//	[]int{0, 0},
