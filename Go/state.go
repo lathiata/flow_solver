@@ -99,7 +99,7 @@ func (s *stateImplementation) getCell(x, y int) (Cell, error) {
 	return s.cells[index], nil
 }
 
-// Get a list of cells that are empty and next to the input cell
+// Get a list of cells that are next to input cell
 func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 	adjacentCells := make([]Cell, 0)
 	if !s.inbounds(x, y) {
@@ -121,13 +121,27 @@ func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			if !reflect.DeepEqual(coords, []int{x, y}) && cell.Empty() {
+			if !reflect.DeepEqual(coords, []int{x, y}) {
 				adjacentCells = append(adjacentCells, cell)
 			}
 
 		}
 	}
 	return adjacentCells, nil
+}
+
+func (s *stateImplementation) adjacentEmptyCells(x, y int) ([]Cell, error) {
+	adjCells, err := s.adjacentCells(x, y)
+	if err != nil {
+		return nil, err
+	}
+	filteredCells := make([]Cell, 0)
+	for _, c := range adjCells {
+		if c.Empty() {
+			filteredCells = append(filteredCells, c)
+		}
+	}
+	return filteredCells, nil
 }
 
 // TODO(tanaylathia)
@@ -148,8 +162,10 @@ func (s *stateImplementation) IsSatisfied() bool {
 		}
 	}
 
-	// TODO(tanay) now check all cells on frontier are adjacent to end cell for that color
-	return true
+	// check that each end cell is adjacent to a cell of the same color
+	// ^we can do this utilizing the state, s.colorIndex because we only
+	// increment once that condition is satisfied
+	return s.colorIndex >= s.Problem().NumColors()-1
 }
 
 func distance(c1, c2 Cell) float64 {
@@ -270,14 +286,16 @@ func (s *stateImplementation) NextStates() []state {
 	}
 	if s.areCellsAdjacent(frontierCell, endCell) {
 		s.colorIndex += 1
+		if s.colorIndex == s.Problem().NumColors() {
+			return nil
+		}
 		frontierCell = s.frontier[s.colorIndex]
 		frontierCellCoords = frontierCell.Coords()
-
 	}
 
 	// Based on the correct frontierCell (if above protocol is correct)
 	// we go through all possible moves and create next states for them
-	possibleMoves, err := s.adjacentCells(frontierCellCoords[0], frontierCellCoords[1])
+	possibleMoves, err := s.adjacentEmptyCells(frontierCellCoords[0], frontierCellCoords[1])
 	if err != nil {
 		log.Fatal(err)
 	}
