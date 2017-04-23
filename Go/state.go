@@ -42,6 +42,7 @@ type stateImplementation struct {
 	problem    Problem
 	colorIndex int
 	frontier   []Cell
+	emptyCells int
 }
 
 func NewState(p Problem) *stateImplementation {
@@ -57,6 +58,7 @@ func NewState(p Problem) *stateImplementation {
 		problem:    p,
 		colorIndex: 0,
 		frontier:   frontier,
+		emptyCells: p.GridSize()*p.GridSize() - 2*p.NumColors(),
 	}
 
 	for val := 0; val < p.NumColors(); val++ {
@@ -214,10 +216,8 @@ func (s *stateImplementation) IsSatisfiable() bool {
 
 func (s *stateImplementation) IsSatisfied() bool {
 	// first check all cells filled
-	for _, cell := range s.cells {
-		if cell.Empty() {
-			return false
-		}
+	if s.emptyCells > 0 {
+		return false
 	}
 
 	// check that each end cell is adjacent to a cell of the same color
@@ -276,6 +276,7 @@ func (s *stateImplementation) Copy() state {
 		cells:      cellCopy,
 		problem:    s.Problem(),
 		colorIndex: s.colorIndex,
+		emptyCells: s.emptyCells,
 	}
 
 	frontierCopy := make([]Cell, len(s.frontier))
@@ -369,6 +370,7 @@ func (s *stateImplementation) NextStates() []state {
 		// Update info in nextState
 		cell.Fill(s.colorIndex)
 		castedNextState.frontier[s.colorIndex] = cell
+		castedNextState.emptyCells -= 1
 		nextStates[i] = castedNextState
 	}
 

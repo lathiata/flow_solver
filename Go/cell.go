@@ -9,7 +9,14 @@ const (
 	Empty = -1
 )
 
-// TODO(tanay) document interface methods
+// The Cell interface is designed so that the state
+// doesn't need to know about the x,y coordinates
+//
+// The Cell should know it's own x,y coords and its value
+// Interface also includes helpful methods for
+// checking if the Cell is empty and also its string repr
+// for printing out the board.
+
 type Cell interface {
 	Fill(val int) error
 	Val() int

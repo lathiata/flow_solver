@@ -70,46 +70,45 @@ func main() {
 	s = NewState(p)
 	simulate(s)
 	//hard
-	coords = [][]int{
-		[]int{0, 0},
-		[]int{5, 2},
-		[]int{1, 1},
-		[]int{3, 0},
-		[]int{1, 2},
-		[]int{2, 6},
-		[]int{1, 6},
-		[]int{5, 4},
-		[]int{4, 0},
-		[]int{5, 3},
-	}
-	gridSize = 8
-	numColors = 5
-	p, err = NewProblem(gridSize, numColors, coords)
-	if err != nil {
-		log.Fatal(err)
-	}
-	s = NewState(p)
-	simulate(s)
-	// very hard
-	coords = [][]int{
-		[]int{0, 8}, //red
-		[]int{3, 3},
-		[]int{1, 8}, //green
-		[]int{8, 0},
-		[]int{2, 8}, //yellow
-		[]int{5, 2},
-		[]int{1, 4}, //orange
-		[]int{3, 1},
-		[]int{3, 2}, //blue
-		[]int{7, 7},
-	}
-	gridSize = 9
-	numColors = 5
-	p, err = NewProblem(gridSize, numColors, coords)
-	if err != nil {
-		log.Fatal(err)
-	}
-	s = NewState(p)
-	simulate(s)
-
+	//coords = [][]int{
+	//	[]int{0, 0},
+	//	[]int{5, 2},
+	//	[]int{1, 1},
+	//	[]int{3, 0},
+	//	[]int{1, 2},
+	//	[]int{2, 6},
+	//	[]int{1, 6},
+	//	[]int{5, 4},
+	//	[]int{4, 0},
+	//	[]int{5, 3},
+	//}
+	//gridSize = 8
+	//numColors = 5
+	//p, err = NewProblem(gridSize, numColors, coords)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//s = NewState(p)
+	//simulate(s)
+	//// very hard
+	//coords = [][]int{
+	//	[]int{0, 8}, //red
+	//	[]int{3, 3},
+	//	[]int{1, 8}, //green
+	//	[]int{8, 0},
+	//	[]int{2, 8}, //yellow
+	//	[]int{5, 2},
+	//	[]int{1, 4}, //orange
+	//	[]int{3, 1},
+	//	[]int{3, 2}, //blue
+	//	[]int{7, 7},
+	//}
+	//gridSize = 9
+	//numColors = 5
+	//p, err = NewProblem(gridSize, numColors, coords)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//s = NewState(p)
+	//simulate(s)
 }
