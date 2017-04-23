@@ -73,7 +73,6 @@ func (p *ProblemImplementation) ColorCoords(i int) ([]Cell, error) {
 	return p.coordMap[i], nil
 }
 
-// TODO(tanay) fix this based on what is available
 func (p *ProblemImplementation) Validate() error {
 	if len(p.coordMap) != p.numColors {
 		return errors.New(fmt.Sprintf("Number of coordinates, %d, and number of colors, %d, must be equal",

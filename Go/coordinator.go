@@ -29,7 +29,7 @@ func NewCoordinator(initialState state) *coordinator {
 		frontier:   frontier,
 		lock:       &sync.Mutex{},
 		waitGroup:  &sync.WaitGroup{},
-		numThreads: 1, //TODO(tanay) this could be configurable
+		numThreads: 5, //TODO(tanay) this could be configurable
 	}
 }
 
@@ -46,8 +46,6 @@ func (c *coordinator) Solve() state {
 	return c.solution
 }
 
-// TODO(tanay) do i need to deal with the case when all colors are "solved" but
-// not all spaces are filled (dont think so explicitly, will just keep searching tree
 // TODO(tanay) behavior when you have a non-solvable game board
 // if there is nothing in the frontier. Then, wake the thread up
 // once something is placed back onto the frontier
