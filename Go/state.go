@@ -22,7 +22,6 @@ var (
 	}
 )
 
-// TODO(tanay) implement a hueristic method (should be in interface probably)
 // The state interface actually wraps two things:
 // 1) How you want to store internals (which cells are filled, etc
 // 2) Transition model (NextStates)
@@ -171,7 +170,6 @@ func (s *stateImplementation) IsSatisfiable() bool {
 		}
 		currCellCoords := stateCopy.frontier[i].Coords()
 		queue, err := stateCopy.adjacentEmptyCells(currCellCoords[0], currCellCoords[1])
-		// TODO(tanay): corner case where color is already "solved"
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -332,7 +330,6 @@ func (s *stateImplementation) areCellsAdjacent(c1, c2 Cell) bool {
 // The transition model this implements will "solve" one color
 // at a time (explores every legal move until finds "end" cell)
 //
-// TODO(tanaylathia) need to initialize frontier/colorIndex in NewState - increment color index for already solved colors
 func (s *stateImplementation) NextStates() []state {
 	// First get the "frontier" cell and the
 	// end cell for the corresponding color
