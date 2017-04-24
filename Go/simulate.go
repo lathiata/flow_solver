@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+var (
+	possibleNumThreads  = []int{1, 2, 3, 5}
+	trialsPerThreadSize = 20
+)
+
 // TODO(tanay) allow command line flags to pass in parameters
 
 // This file instantiates game boards based on command line
@@ -12,11 +17,31 @@ import (
 func simulate(s state) {
 	log.Printf("Start state: %s", s)
 	startTime := time.Now()
-	coordinator := NewCoordinator(s)
+	coordinator := NewCoordinator(s, 10)
 	solution := coordinator.Solve()
 	elapsedTime := time.Since(startTime)
 	log.Printf("Solution: %s in %f sec", solution, float64(elapsedTime)/float64(1000000000))
+}
 
+func benchmark(s state) {
+	var solution state
+	log.Printf("Start state: %s", s)
+	averageTimes := make([]float64, len(possibleNumThreads))
+	for i, numThreads := range possibleNumThreads {
+		totalTime := float64(0)
+		for j := 0; j < trialsPerThreadSize; j++ {
+			startTime := time.Now()
+			coordinator := NewCoordinator(s, numThreads)
+			solution = coordinator.Solve()
+			elapsedTime := time.Since(startTime)
+			totalTime += float64(elapsedTime)/float64(1000000000) //nanoseconds->seconds
+		}
+		averageTimes[i] = totalTime / float64(trialsPerThreadSize)
+	}
+	log.Printf("Solution: %s", solution)
+	for i, numThreads := range possibleNumThreads {
+		log.Printf("For %d threads, average elapsed time is: %f", numThreads, averageTimes[i])
+	}
 }
 func main() {
 	//easy
@@ -34,12 +59,12 @@ func main() {
 	}
 	gridSize := 5
 	numColors := 5
-	p, err := NewProblem(gridSize, numColors, coords)
+	easyProblem, err := NewProblem(gridSize, numColors, coords)
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := NewState(p)
-	simulate(s)
+	easyState := NewState(easyProblem)
+	benchmark(easyState)
 	//medium
 	coords = [][]int{
 		[]int{0, 0},
@@ -63,12 +88,12 @@ func main() {
 	}
 	gridSize = 8
 	numColors = 9
-	p, err = NewProblem(gridSize, numColors, coords)
+	mediumProblem, err := NewProblem(gridSize, numColors, coords)
 	if err != nil {
 		log.Fatal(err)
 	}
-	s = NewState(p)
-	simulate(s)
+	mediumState := NewState(mediumProblem)
+	benchmark(mediumState)
 	//hard
 	//coords = [][]int{
 	//	[]int{0, 0},

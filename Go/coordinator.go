@@ -16,7 +16,7 @@ type coordinator struct {
 }
 
 // TODO(tanay) should this check if initialState is solved?
-func NewCoordinator(initialState state) *coordinator {
+func NewCoordinator(initialState state, numThreads int) *coordinator {
 	frontier := make(PriorityQueue, 0)
 	frontier = append(frontier, &StateWrapper{
 		State: initialState,
@@ -29,7 +29,7 @@ func NewCoordinator(initialState state) *coordinator {
 		frontier:   frontier,
 		lock:       &sync.Mutex{},
 		waitGroup:  &sync.WaitGroup{},
-		numThreads: 5, //TODO(tanay) this could be configurable
+		numThreads: numThreads,
 	}
 }
 
