@@ -129,7 +129,6 @@ func (c *coordinator) helper(id int) {
 			}
 
 			if numPushed > 0 {
-				//log.Printf("[%d] pushing %d states on frontier", id, numPushed)
 				c.cond.Broadcast()
 			}
 		}
