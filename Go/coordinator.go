@@ -27,8 +27,8 @@ func NewCoordinator(initialState state, numThreads int) *coordinator {
 		isSolved:   false,
 		explored:   make([]string, 0),
 		frontier:   frontier,
-		lock:       &sync.Mutex{},
 		waitGroup:  &sync.WaitGroup{},
+		lock:       &sync.Mutex{},
 		numThreads: numThreads,
 	}
 }
@@ -39,7 +39,7 @@ func NewCoordinator(initialState state, numThreads int) *coordinator {
 func (c *coordinator) Solve() state {
 	for i := 0; i < c.numThreads; i++ {
 		c.waitGroup.Add(1)
-		go c.helper(i)
+		go c.helper()
 	}
 
 	c.waitGroup.Wait()
@@ -49,7 +49,7 @@ func (c *coordinator) Solve() state {
 // TODO(tanay) behavior when you have a non-solvable game board
 // if there is nothing in the frontier. Then, wake the thread up
 // once something is placed back onto the frontier
-func (c *coordinator) helper(id int) {
+func (c *coordinator) helper() {
 	for !c.isSolved {
 		var s state
 

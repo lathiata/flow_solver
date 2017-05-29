@@ -248,6 +248,8 @@ func (s *stateImplementation) Problem() Problem {
 	return s.problem
 }
 
+// TODO(tanay) this doesn't take frontier into consideration
+// TODO(tanay) think about whether it is possible to explore same state twice
 func (s *stateImplementation) Serialize() string {
 	serializedState := ""
 	for x := 0; x < s.Problem().GridSize(); x++ {

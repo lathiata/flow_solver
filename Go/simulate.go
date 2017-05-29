@@ -11,6 +11,7 @@ var (
 )
 
 // TODO(tanay) allow command line flags to pass in parameters
+// TODO(tanay) move test game-boards into separate directory
 
 // This file instantiates game boards based on command line
 // inputs and runs the indicated algorithm to solve it
@@ -34,7 +35,7 @@ func benchmark(s state) {
 			coordinator := NewCoordinator(s, numThreads)
 			solution = coordinator.Solve()
 			elapsedTime := time.Since(startTime)
-			totalTime += float64(elapsedTime)/float64(1000000000) //nanoseconds->seconds
+			totalTime += float64(elapsedTime) / float64(1000000000) //nanoseconds->seconds
 		}
 		averageTimes[i] = totalTime / float64(trialsPerThreadSize)
 	}
@@ -64,37 +65,37 @@ func main() {
 		log.Fatal(err)
 	}
 	easyState := NewState(easyProblem)
-	benchmark(easyState)
+	simulate(easyState)
 	//medium
-	coords = [][]int{
-		[]int{0, 0},
-		[]int{3, 0},
-		[]int{4, 0},
-		[]int{7, 6},
-		[]int{2, 1},
-		[]int{3, 5},
-		[]int{2, 2},
-		[]int{1, 6},
-		[]int{2, 3},
-		[]int{3, 6},
-		[]int{4, 1},
-		[]int{6, 1},
-		[]int{3, 1},
-		[]int{4, 4},
-		[]int{4, 3},
-		[]int{6, 6},
-		[]int{5, 3},
-		[]int{7, 7},
-	}
-	gridSize = 8
-	numColors = 9
-	mediumProblem, err := NewProblem(gridSize, numColors, coords)
-	if err != nil {
-		log.Fatal(err)
-	}
-	mediumState := NewState(mediumProblem)
-	benchmark(mediumState)
-	//hard
+	//coords = [][]int{
+	//	[]int{0, 0},
+	//	[]int{3, 0},
+	//	[]int{4, 0},
+	//	[]int{7, 6},
+	//	[]int{2, 1},
+	//	[]int{3, 5},
+	//	[]int{2, 2},
+	//	[]int{1, 6},
+	//	[]int{2, 3},
+	//	[]int{3, 6},
+	//	[]int{4, 1},
+	//	[]int{6, 1},
+	//	[]int{3, 1},
+	//	[]int{4, 4},
+	//	[]int{4, 3},
+	//	[]int{6, 6},
+	//	[]int{5, 3},
+	//	[]int{7, 7},
+	//}
+	//gridSize = 8
+	//numColors = 9
+	//mediumProblem, err := NewProblem(gridSize, numColors, coords)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//mediumState := NewState(mediumProblem)
+	//simulate(mediumState)
+	////hard
 	//coords = [][]int{
 	//	[]int{0, 0},
 	//	[]int{5, 2},
@@ -109,12 +110,12 @@ func main() {
 	//}
 	//gridSize = 8
 	//numColors = 5
-	//p, err = NewProblem(gridSize, numColors, coords)
+	//hardProblem, err := NewProblem(gridSize, numColors, coords)
 	//if err != nil {
 	//	log.Fatal(err)
 	//}
-	//s = NewState(p)
-	//simulate(s)
+	//hardState := NewState(hardProblem)
+	//simulate(hardState)
 	//// very hard
 	//coords = [][]int{
 	//	[]int{0, 8}, //red
@@ -130,10 +131,10 @@ func main() {
 	//}
 	//gridSize = 9
 	//numColors = 5
-	//p, err = NewProblem(gridSize, numColors, coords)
+	//veryHardProblem, err := NewProblem(gridSize, numColors, coords)
 	//if err != nil {
 	//	log.Fatal(err)
 	//}
-	//s = NewState(p)
-	//simulate(s)
+	//veryHardState := NewState(veryHardProblem)
+	//simulate(veryHardState)
 }
