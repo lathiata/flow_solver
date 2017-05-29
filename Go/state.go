@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/fatih/color"
-	"reflect"
 )
 
 var (
@@ -120,7 +119,7 @@ func (s *stateImplementation) adjacentCells(x, y int) ([]Cell, error) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			if !reflect.DeepEqual(coords, []int{x, y}) {
+			if !(i == x && j == y) {
 				adjacentCells = append(adjacentCells, cell)
 			}
 
