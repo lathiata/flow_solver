@@ -18,6 +18,7 @@ type coordinator struct {
 	waitGroup      *sync.WaitGroup
 }
 
+// TODO(tanay) push logging into custom handler to easily enable/disable logging
 // TODO(tanay) should this check if initialState is solved?
 func NewCoordinator(initialState state, numThreads int) *coordinator {
 	frontier := make(PriorityQueue, 0)
