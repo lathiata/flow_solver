@@ -67,74 +67,74 @@ func main() {
 	easyState := NewState(easyProblem)
 	simulate(easyState)
 	//medium
-	//coords = [][]int{
-	//	[]int{0, 0},
-	//	[]int{3, 0},
-	//	[]int{4, 0},
-	//	[]int{7, 6},
-	//	[]int{2, 1},
-	//	[]int{3, 5},
-	//	[]int{2, 2},
-	//	[]int{1, 6},
-	//	[]int{2, 3},
-	//	[]int{3, 6},
-	//	[]int{4, 1},
-	//	[]int{6, 1},
-	//	[]int{3, 1},
-	//	[]int{4, 4},
-	//	[]int{4, 3},
-	//	[]int{6, 6},
-	//	[]int{5, 3},
-	//	[]int{7, 7},
-	//}
-	//gridSize = 8
-	//numColors = 9
-	//mediumProblem, err := NewProblem(gridSize, numColors, coords)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//mediumState := NewState(mediumProblem)
-	//simulate(mediumState)
-	////hard
-	//coords = [][]int{
-	//	[]int{0, 0},
-	//	[]int{5, 2},
-	//	[]int{1, 1},
-	//	[]int{3, 0},
-	//	[]int{1, 2},
-	//	[]int{2, 6},
-	//	[]int{1, 6},
-	//	[]int{5, 4},
-	//	[]int{4, 0},
-	//	[]int{5, 3},
-	//}
-	//gridSize = 8
-	//numColors = 5
-	//hardProblem, err := NewProblem(gridSize, numColors, coords)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//hardState := NewState(hardProblem)
-	//simulate(hardState)
-	//// very hard
-	//coords = [][]int{
-	//	[]int{0, 8}, //red
-	//	[]int{3, 3},
-	//	[]int{1, 8}, //green
-	//	[]int{8, 0},
-	//	[]int{2, 8}, //yellow
-	//	[]int{5, 2},
-	//	[]int{1, 4}, //orange
-	//	[]int{3, 1},
-	//	[]int{3, 2}, //blue
-	//	[]int{7, 7},
-	//}
-	//gridSize = 9
-	//numColors = 5
-	//veryHardProblem, err := NewProblem(gridSize, numColors, coords)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//veryHardState := NewState(veryHardProblem)
-	//simulate(veryHardState)
+	coords = [][]int{
+		[]int{0, 0},
+		[]int{3, 0},
+		[]int{4, 0},
+		[]int{7, 6},
+		[]int{2, 1},
+		[]int{3, 5},
+		[]int{2, 2},
+		[]int{1, 6},
+		[]int{2, 3},
+		[]int{3, 6},
+		[]int{4, 1},
+		[]int{6, 1},
+		[]int{3, 1},
+		[]int{4, 4},
+		[]int{4, 3},
+		[]int{6, 6},
+		[]int{5, 3},
+		[]int{7, 7},
+	}
+	gridSize = 8
+	numColors = 9
+	mediumProblem, err := NewProblem(gridSize, numColors, coords)
+	if err != nil {
+		log.Fatal(err)
+	}
+	mediumState := NewState(mediumProblem)
+	simulate(mediumState)
+	//hard
+	coords = [][]int{
+		[]int{0, 0},
+		[]int{5, 2},
+		[]int{1, 1},
+		[]int{3, 0},
+		[]int{1, 2},
+		[]int{2, 6},
+		[]int{1, 6},
+		[]int{5, 4},
+		[]int{4, 0},
+		[]int{5, 3},
+	}
+	gridSize = 8
+	numColors = 5
+	hardProblem, err := NewProblem(gridSize, numColors, coords)
+	if err != nil {
+		log.Fatal(err)
+	}
+	hardState := NewState(hardProblem)
+	simulate(hardState)
+	// very hard
+	coords = [][]int{
+		[]int{0, 8}, //red
+		[]int{3, 3},
+		[]int{1, 8}, //green
+		[]int{8, 0},
+		[]int{2, 8}, //yellow
+		[]int{5, 2},
+		[]int{1, 4}, //orange
+		[]int{3, 1},
+		[]int{3, 2}, //blue
+		[]int{7, 7},
+	}
+	gridSize = 9
+	numColors = 5
+	veryHardProblem, err := NewProblem(gridSize, numColors, coords)
+	if err != nil {
+		log.Fatal(err)
+	}
+	veryHardState := NewState(veryHardProblem)
+	simulate(veryHardState)
 }
