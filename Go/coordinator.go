@@ -4,7 +4,6 @@ import (
 	"container/heap"
 	//"log"
 	"sync"
-	"sync/atomic"
 )
 
 type coordinator struct {
@@ -13,7 +12,6 @@ type coordinator struct {
 	solution       state
 	explored       []string
 	frontier       PriorityQueue
-	frontierLength int32
 	cond           *sync.Cond
 	waitGroup      *sync.WaitGroup
 }
@@ -31,7 +29,6 @@ func NewCoordinator(initialState state, numThreads int) *coordinator {
 		isSolved:       false,
 		explored:       make([]string, 0),
 		frontier:       frontier,
-		frontierLength: int32(1),
 		waitGroup:      &sync.WaitGroup{},
 		cond:           sync.NewCond(&sync.Mutex{}),
 		numThreads:     numThreads,
@@ -60,11 +57,12 @@ func (c *coordinator) helper(id int) {
 		// first critical section
 		// pop the first state from the frontier
 		c.cond.L.Lock()
-		for atomic.LoadInt32(&c.frontierLength) == 0 {
+		for c.frontier.Len() == 0 && !c.isSolved {
 			//log.Printf("[%d] sleeping until frontier has something", id)
 			// Sleep until there is something on the frontier
 			c.cond.Wait()
 		}
+
 		// When we wake up, it is because there is a new state to explore OR
 		// another goroutine solved the board
 		if c.isSolved {
@@ -75,7 +73,6 @@ func (c *coordinator) helper(id int) {
 
 		// This goroutine will have the lock when it resumes
 		stateWrapper := heap.Pop(&c.frontier)
-		atomic.AddInt32(&c.frontierLength, int32(-1))
 		// TODO(tanay): Could check the val here and panic if its negative?
 		s := stateWrapper.(*StateWrapper).State
 		//log.Printf("[%d] exploring %v", id, s)
@@ -106,12 +103,9 @@ func (c *coordinator) helper(id int) {
 			c.solution = solvedState
 			c.isSolved = true
 			//log.Printf("[%d] solved the board", id)
-			// TODO(tanay): remove this hack and do something more idiomatic (channels)
-			atomic.AddInt32(&c.frontierLength, int32(c.numThreads))
-			//log.Printf("[%d] after adding frontier is len %d", id, atomic.LoadInt32(&c.frontierLength))
 			c.cond.Broadcast()
 		} else {
-			numPushed := 0
+			pushed := false
 			for _, ns := range filteredNextStates {
 				serializedState := ns.Serialize()
 				unique := true
@@ -123,12 +117,11 @@ func (c *coordinator) helper(id int) {
 				}
 				if unique {
 					heap.Push(&c.frontier, &StateWrapper{State: ns})
-					atomic.AddInt32(&c.frontierLength, int32(1))
-					numPushed++
+					pushed = true
 				}
 			}
 
-			if numPushed > 0 {
+			if pushed {
 				c.cond.Broadcast()
 			}
 		}
