@@ -2,18 +2,17 @@ package main
 
 import (
 	"container/heap"
-	//"log"
 	"sync"
 )
 
 type coordinator struct {
-	numThreads     int
-	isSolved       bool
-	solution       state
-	explored       []string
-	frontier       PriorityQueue
-	cond           *sync.Cond
-	waitGroup      *sync.WaitGroup
+	numThreads int
+	isSolved   bool
+	solution   state
+	explored   []string
+	frontier   PriorityQueue
+	cond       *sync.Cond
+	waitGroup  *sync.WaitGroup
 }
 
 // TODO(tanay) push logging into custom handler to easily enable/disable logging
@@ -26,12 +25,12 @@ func NewCoordinator(initialState state, numThreads int) *coordinator {
 	})
 	heap.Init(&frontier)
 	return &coordinator{
-		isSolved:       false,
-		explored:       make([]string, 0),
-		frontier:       frontier,
-		waitGroup:      &sync.WaitGroup{},
-		cond:           sync.NewCond(&sync.Mutex{}),
-		numThreads:     numThreads,
+		isSolved:   false,
+		explored:   make([]string, 0),
+		frontier:   frontier,
+		waitGroup:  &sync.WaitGroup{},
+		cond:       sync.NewCond(&sync.Mutex{}),
+		numThreads: numThreads,
 	}
 }
 
@@ -41,7 +40,7 @@ func NewCoordinator(initialState state, numThreads int) *coordinator {
 func (c *coordinator) Solve() state {
 	for i := 0; i < c.numThreads; i++ {
 		c.waitGroup.Add(1)
-		go c.helper(i)
+		go c.helper()
 	}
 
 	c.waitGroup.Wait()
@@ -51,14 +50,13 @@ func (c *coordinator) Solve() state {
 // TODO(tanay) behavior when you have a non-solvable game board
 // if there is nothing in the frontier. Then, wake the thread up
 // once something is placed back onto the frontier
-func (c *coordinator) helper(id int) {
+func (c *coordinator) helper() {
 	defer c.waitGroup.Done()
 	for {
 		// first critical section
 		// pop the first state from the frontier
 		c.cond.L.Lock()
 		for c.frontier.Len() == 0 && !c.isSolved {
-			//log.Printf("[%d] sleeping until frontier has something", id)
 			// Sleep until there is something on the frontier
 			c.cond.Wait()
 		}
@@ -66,7 +64,6 @@ func (c *coordinator) helper(id int) {
 		// When we wake up, it is because there is a new state to explore OR
 		// another goroutine solved the board
 		if c.isSolved {
-			//log.Printf("[%d] Another thread solved board, return", id)
 			c.cond.L.Unlock()
 			return
 		}
@@ -102,7 +99,6 @@ func (c *coordinator) helper(id int) {
 		if isSolved {
 			c.solution = solvedState
 			c.isSolved = true
-			//log.Printf("[%d] solved the board", id)
 			c.cond.Broadcast()
 		} else {
 			pushed := false
