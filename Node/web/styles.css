@@ -1,0 +1,144 @@
+/* Space out content a bit */
+body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* Everything but the jumbotron gets side spacing for mobile first views */
+.header,
+.marketing,
+.footer {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* Custom page header */
+.header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+/* Make the masthead heading the same height as the navigation */
+.header h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 40px;
+}
+
+/* Custom page footer */
+.footer {
+  padding-top: 19px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+}
+
+/* Customize container */
+@media (min-width: 768px) {
+  .container {
+    max-width: 730px;
+  }
+}
+.container-narrow > hr {
+  margin: 30px 0;
+}
+
+/* Main marketing message and sign up button */
+.jumbotron {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.music-info {
+    text-align: center;
+}
+
+/* Supporting marketing content */
+.marketing {
+  margin: 40px 0;
+}
+.marketing p + h4 {
+  margin-top: 28px;
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+  /* Remove the padding we set earlier */
+  .header,
+  .marketing,
+  .footer {
+    padding-right: 0;
+    padding-left: 0;
+  }
+  /* Space out the masthead */
+  .header {
+    margin-bottom: 30px;
+  }
+  /* Remove the bottom border on the jumbotron for visual effect */
+  .jumbotron {
+    border-bottom: 0;
+  }
+}
+
+#bootstrap-overrides .js-loading *,
+.js-loading *:before,
+.js-loading *:after {
+  animation-play-state: paused !important;
+}
+
+/* Music information section */
+#bootstrap-overrides #create-board {
+    display:table;
+
+    text-align: center;
+
+    background-color: rgb(215, 215, 215);
+    min-height: 150px;
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+    margin-bottom: 5px;
+
+    border-radius: 5px;
+}
+
+#bootstrap-overrides .board-row {
+    height: 30px;
+    margin: auto;
+}
+
+#bootstrap-overrides .board-cell {
+    display: inline-block;
+
+    background-color: rgb(200, 200, 200);
+
+    width: 30px;
+    height: 30px;
+    border-width: 2px;
+    border-color: black;
+    border-style: solid;
+}
+
+#bootstrap-overrides .board-cell:hover {
+    cursor: pointer;
+    -webkit-filter: brightness(70%);
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#bootstrap-overrides #color-tray {
+    display:table;
+
+    text-align: center;
+
+    background-color: rgb(215, 215, 215);
+    min-height: 40px;
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+
+    border-radius: 5px;
+}
+
+#bootstrap-overrides #color-tray .color {
+}
