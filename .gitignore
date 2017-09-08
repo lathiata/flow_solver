@@ -1,6 +1,7 @@
 *.binary
 *.pyc
 *.pdf
-*.js
 *.swp
 *.idea
+
+node_modules/
